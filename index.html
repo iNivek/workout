@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Recomp Plan"/>
+<meta name="theme-color" content="#070d14"/>
+<title>7-Day Recomp Workout</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+  html,body{height:100%;background:#070d14;overflow:hidden}
+  body{font-family:'Courier New',Courier,monospace;color:#94a3b8}
+  ::-webkit-scrollbar{display:none}
+  button{-webkit-appearance:none;font-family:'Courier New',Courier,monospace;cursor:pointer;border:none}
+  a{text-decoration:none}
+
+  #root{
+    display:flex;flex-direction:column;
+    height:100svh;
+    height:-webkit-fill-available;
+    max-width:480px;margin:0 auto;
+    background:#070d14;overflow:hidden;
+    position:relative;
+  }
+
+  /* ── HEADER ── */
+  .hdr{
+    background:linear-gradient(160deg,#0c1929 0%,#100b1e 100%);
+    border-bottom:1px solid #0d1e2e;flex-shrink:0;
+    padding-top:max(14px,env(safe-area-inset-top));
+    padding-left:16px;padding-right:16px;padding-bottom:0;
+  }
+  .hdr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .hdr-subtitle{font-size:8px;color:#1e3040;letter-spacing:3px;margin-bottom:2px}
+  .hdr-title{font-size:18px;font-weight:700;color:#e2e8f0;letter-spacing:1px}
+  .hdr-pct{font-size:22px;font-weight:700;text-align:right}
+  .hdr-pct-label{font-size:8px;color:#1e3040;letter-spacing:1px}
+  .progress-bar{height:2px;background:#0d1e2e;overflow:hidden;margin-bottom:0}
+  .progress-fill{height:100%;transition:width .5s ease;border-radius:1px}
+
+  /* ── DAY TABS ── */
+  .day-tabs{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .day-tab{
+    flex:0 0 auto;display:flex;flex-direction:column;
+    align-items:center;gap:3px;padding:10px 14px;
+    background:transparent;border-bottom:2px solid transparent;
+    min-width:58px;transition:all .2s;
+  }
+  .day-tab.active{border-bottom-color:var(--c)}
+  .day-tab .emoji{font-size:19px;line-height:1}
+  .day-tab .label{font-size:10px;font-weight:700;letter-spacing:1px;color:#4b5563;transition:color .2s}
+  .day-tab.active .label{color:var(--c)}
+  .dots{display:flex;gap:2px;margin-top:1px}
+  .dot{width:4px;height:4px;border-radius:50%;background:#1e2d3e;transition:background .3s}
+  .dot.filled{background:var(--c)}
+
+  /* ── DAY HEADER ── */
+  .day-hdr{
+    padding:12px 16px 10px;
+    border-bottom:1px solid #0d1e2e;flex-shrink:0;
+  }
+  .day-hdr-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .day-type{font-size:8px;letter-spacing:3px;margin-bottom:3px}
+  .day-name{font-size:17px;font-weight:700;color:#e2e8f0;line-height:1.2}
+  .day-sub{font-size:11px;color:#374151;margin-top:1px}
+  .day-counter{
+    border-radius:20px;padding:4px 12px;flex-shrink:0;
+    font-size:11px;font-weight:700;
+  }
+  .day-goal{
+    font-size:10px;color:#1e3a52;margin-top:7px;line-height:1.5;
+    border-left:2px solid;padding-left:8px;
+  }
+
+  /* ── SPLIT BODY ── */
+  .body{flex:1;display:flex;overflow:hidden}
+  .ex-list{
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
+    transition:width .25s ease;flex-shrink:0;
+  }
+  .ex-list.full{width:100%}
+  .ex-list.split{width:38%;border-right:1px solid #0d1e2e}
+
+  /* ── EXERCISE ROW ── */
+  .ex-row{
+    display:flex;align-items:center;gap:10px;
+    padding:13px 14px;background:#0b1520;
+    border-left:3px solid transparent;
+    border-bottom:1px solid #0d1c2a;
+    cursor:pointer;transition:all .15s;
+    user-select:none;
+  }
+  .ex-row.sel{border-left-color:var(--c);background:color-mix(in srgb,var(--c) 8%,transparent)}
+  .ex-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#1e3040;transition:all .3s}
+  .ex-dot.ready{background:#22c55e}
+  .ex-name{font-size:12px;font-weight:600;line-height:1.35;color:#64748b;margin-bottom:3px;transition:color .15s}
+  .ex-row.sel .ex-name{color:#f1f5f9}
+  .ex-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .ex-type-label{font-size:8px;letter-spacing:1.5px}
+  .ex-sets{font-size:10px;color:#374151}
+  .done-btn{
+    width:34px;height:34px;border-radius:50%;flex-shrink:0;
+    background:transparent;border:2px solid #1e3040;
+    color:#1e3040;font-size:15px;display:flex;
+    align-items:center;justify-content:center;transition:all .2s;
+  }
+  .done-btn.checked{background:#15803d;border-color:#22c55e;color:#fff}
+
+  /* ── DETAIL PANE ── */
+  .detail{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#08111a}
+  .detail-inner{padding:12px 14px 0}
+  .back-btn{
+    background:transparent;color:#374151;
+    padding:4px 0;font-size:11px;letter-spacing:1px;
+    margin-bottom:8px;display:block;
+  }
+  .det-type{font-size:8px;letter-spacing:2px;margin-bottom:3px}
+  .det-name{font-size:14px;font-weight:700;color:#e2e8f0;line-height:1.35;margin-bottom:10px}
+  .stats-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+  .stat-box{
+    background:#0b1829;border-radius:6px;padding:5px 10px;text-align:center;
+    border:1px solid;
+  }
+  .stat-lbl{font-size:7px;letter-spacing:2px;color:#374151;margin-bottom:2px}
+  .stat-val{font-size:15px;font-weight:700}
+
+  /* ── VIDEO CARD ── */
+  .vid-card{
+    border-radius:10px;overflow:hidden;position:relative;
+    display:block;
+  }
+  .vid-thumb-wrap{position:relative;background:#07111a;aspect-ratio:16/9;overflow:hidden}
+  .vid-thumb{width:100%;height:100%;object-fit:cover;display:block}
+  .vid-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(0deg,#000000aa 0%,transparent 55%);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .play-btn{
+    width:54px;height:54px;border-radius:50%;
+    background:#ff0000dd;display:flex;align-items:center;
+    justify-content:center;box-shadow:0 4px 20px #00000080;
+  }
+  .play-arrow{
+    width:0;height:0;
+    border-top:10px solid transparent;border-bottom:10px solid transparent;
+    border-left:18px solid white;margin-left:4px;
+  }
+  .vid-title-bar{
+    position:absolute;bottom:0;left:0;right:0;
+    background:linear-gradient(transparent,#000000cc);
+    padding:20px 12px 10px;
+  }
+  .vid-title{font-size:10px;color:#e2e8f0;line-height:1.4}
+  .vid-cta{font-size:9px;color:#ff6b6b;margin-top:2px;letter-spacing:1px}
+  .yt-badge{
+    position:absolute;top:8px;right:8px;
+    background:#ff0000;color:#fff;
+    padding:2px 8px;border-radius:4px;
+    font-size:9px;font-weight:700;letter-spacing:1px;
+  }
+
+  /* fallback when no thumb */
+  .vid-fallback{
+    border-radius:10px;overflow:hidden;
+    aspect-ratio:16/9;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:10px;
+    background:linear-gradient(135deg,#0c1929,#0f0b1e);
+    border:1px solid #1e3040;text-decoration:none;
+  }
+  .vid-fallback-icon{font-size:36px}
+  .vid-fallback-text{font-size:12px;color:#e2e8f0;font-weight:700;text-align:center;padding:0 16px}
+  .vid-fallback-sub{font-size:10px;color:#374151;text-align:center}
+  .vid-fallback-btn{
+    background:#ff0000;color:#fff;
+    padding:10px 22px;border-radius:8px;
+    font-size:11px;font-weight:700;letter-spacing:1px;
+    margin-top:4px;display:inline-block;
+  }
+
+  /* ── CUE ── */
+  .cue-box{
+    margin-top:10px;padding:11px 12px;
+    background:#0b1829;border-radius:6px;
+    border-left:3px solid;
+  }
+  .cue-lbl{font-size:8px;letter-spacing:2px;margin-bottom:4px}
+  .cue-text{font-size:12px;color:#94a3b8;line-height:1.7;font-style:italic}
+
+  /* ── MUSCLES ── */
+  .muscles{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+  .muscle-tag{
+    font-size:8px;padding:3px 8px;border-radius:10px;
+    letter-spacing:.5px;border:1px solid;
+  }
+
+  /* ── MARK DONE ── */
+  .mark-btn{
+    width:100%;margin-top:10px;padding:14px;
+    border-radius:8px;font-size:11px;font-weight:700;
+    letter-spacing:2px;transition:all .2s;border:1px solid;
+  }
+  .mark-btn.done{background:#15803d;border-color:#22c55e;color:#fff}
+
+  /* ── PREV/NEXT ── */
+  .nav-row{display:flex;gap:8px;margin-top:8px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+  .nav-btn{
+    flex:1;padding:11px;border-radius:7px;
+    font-size:10px;letter-spacing:1px;
+    transition:all .2s;border:1px solid;
+  }
+  .nav-btn.prev{background:transparent;border-color:#1e3040;color:#374151}
+  .nav-btn.next-active{border:none}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+
+  /* ── COMPLETION BANNER ── */
+  .complete-banner{
+    position:absolute;
+    bottom:max(16px,env(safe-area-inset-bottom));
+    left:16px;right:16px;
+    background:#071a0f;border:1px solid #22c55e;
+    border-radius:12px;padding:14px 16px;
+    display:flex;align-items:center;gap:12px;
+    box-shadow:0 8px 32px #000a;
+    animation:slideup .3s ease;
+  }
+  .banner-icon{font-size:28px}
+  .banner-title{font-size:12px;color:#22c55e;font-weight:700;letter-spacing:1px}
+  .banner-sub{font-size:9px;color:#374151;margin-top:2px}
+
+  @keyframes slideup{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+// ─── FULL 7-DAY WORKOUT DATA ─────────────────────────────────────────────────
+const WEEK = [
+  {
+    day:"MON",fullDay:"Monday",color:"#FF6B35",
+    label:"Heavy Lower Body",sublabel:"HIIT Finisher",
+    emoji:"🏋️",duration:"~65 min",isRest:false,
+    goal:"Build posterior chain mass → raises resting metabolism 24/7",
+    exercises:[
+      {name:"Warm-Up: Hip Circles, Leg Swings, BW Squats",type:"warmup",sets:"—",reps:"5 min",rpe:"4",
+       muscles:["Hip Flexors","Ankles","Glutes"],
+       cue:"Mobilize hip flexors and ankles fully. Warm squats before loading is mandatory.",
+       yt:"hip circles leg swings warm up lower body exercise tutorial"},
+      {name:"Goblet / Barbell Squats",type:"compound",sets:"4",reps:"10 reps",rpe:"9",
+       muscles:["Quads","Glutes","Hamstrings","Core"],
+       cue:"THE #1 recomp exercise. 3-sec descent. Knees track over toes. Break parallel every rep. Add weight weekly.",
+       yt:"goblet squat proper form tutorial beginners"},
+      {name:"Romanian Deadlifts",type:"compound",sets:"4",reps:"10 reps",rpe:"8",
+       muscles:["Hamstrings","Glutes","Erectors"],
+       cue:"Hinge hips BACK, flat back, feel hamstring stretch at bottom. Explosive hip drive up.",
+       yt:"romanian deadlift proper form dumbbell tutorial"},
+      {name:"Walking Lunges (Dumbbells)",type:"compound",sets:"3",reps:"12/leg",rpe:"7",
+       muscles:["Quads","Glutes","Hip Flexors"],
+       cue:"Long stride, front knee over ankle, torso upright. Hold dumbbells at sides.",
+       yt:"dumbbell walking lunge proper form tutorial"},
+      {name:"Hip Thrusts",type:"compound",sets:"3",reps:"15 reps",rpe:"8",
+       muscles:["Glutes","Hamstrings","Core"],
+       cue:"Drive hips up powerfully. 1-sec squeeze at top. Directly destroys beer belly area.",
+       yt:"hip thrust proper form exercise tutorial"},
+      {name:"Leg Press or Step-Ups w/ Knee Drive",type:"compound",sets:"3",reps:"12/leg",rpe:"7",
+       muscles:["Quads","Glutes","Calves"],
+       cue:"Leg press if available (heavy). Otherwise step-ups: drive knee to chest at top.",
+       yt:"step up knee drive exercise tutorial"},
+      {name:"⭐ HIIT Finisher — Jump Squats",type:"finisher",sets:"6",reps:"40s ON / 20s off",rpe:"10",
+       muscles:["Quads","Glutes","Calves","Core"],
+       cue:"ALL-OUT every round. Heart rate to 90%+ max. Creates 24+ hr afterburn window.",
+       yt:"jump squat HIIT finisher exercise tutorial"},
+      {name:"Cool-Down: Quads, Hamstrings, Hip Flexors",type:"cooldown",sets:"—",reps:"5 min",rpe:"2",
+       muscles:["Hip Flexors","Quads","Hamstrings"],
+       cue:"Hold each 30-40 sec. Prioritize hip flexors — tight hip flexors create 'pouch' appearance.",
+       yt:"quad hamstring hip flexor stretch cool down"},
+    ]
+  },
+  {
+    day:"TUE",fullDay:"Tuesday",color:"#A855F7",
+    label:"Upper Body Push",sublabel:"Core + Burpee Finisher",
+    emoji:"💪",duration:"~55 min",isRest:false,
+    goal:"Build chest, shoulders, triceps. More muscle = higher resting calorie burn.",
+    exercises:[
+      {name:"Warm-Up: Shoulder Rotations, Push-Up Holds",type:"warmup",sets:"—",reps:"5 min",rpe:"4",
+       muscles:["Rotator Cuff","Deltoids"],
+       cue:"Warm shoulder joints fully. Most pressing injuries occur when cold.",
+       yt:"shoulder warm up rotation push up exercise"},
+      {name:"Dumbbell Bench Press (Flat)",type:"compound",sets:"4",reps:"10-12 reps",rpe:"8",
+       muscles:["Chest","Front Delts","Triceps"],
+       cue:"Full range — lower to chest. 2-sec controlled descent. Feel chest stretch at bottom.",
+       yt:"dumbbell flat bench press proper form tutorial"},
+      {name:"Dumbbell Overhead Press",type:"compound",sets:"4",reps:"12 reps",rpe:"7",
+       muscles:["Deltoids","Triceps","Core"],
+       cue:"Core braced, full overhead extension. Slow 2-sec lower. Protect lower back.",
+       yt:"dumbbell overhead shoulder press proper form tutorial"},
+      {name:"Incline Dumbbell Press (30-45°)",type:"compound",sets:"3",reps:"12 reps",rpe:"7",
+       muscles:["Upper Chest","Front Delts","Triceps"],
+       cue:"Upper chest targets the 'shelf' look. Elbows at 60°, not flared.",
+       yt:"incline dumbbell press upper chest tutorial"},
+      {name:"Dips (Bench or Parallel Bars)",type:"compound",sets:"3",reps:"10-12 reps",rpe:"8",
+       muscles:["Chest","Triceps","Front Delts"],
+       cue:"Shoulders slightly below elbows at bottom. Lean forward slightly for more chest.",
+       yt:"chest dips bench parallel bars proper form tutorial"},
+      {name:"Tricep Overhead Extension",type:"isolation",sets:"3",reps:"15 reps",rpe:"6",
+       muscles:["Triceps Long Head"],
+       cue:"Full overhead extension. Long head of triceps = visible arm definition.",
+       yt:"tricep overhead extension dumbbell tutorial"},
+      {name:"Plank Hold",type:"core",sets:"3",reps:"50 sec",rpe:"6",
+       muscles:["Core","Glutes","Shoulders"],
+       cue:"Squeeze every muscle simultaneously. No sagging hips. Breathe steadily.",
+       yt:"plank hold proper form core exercise tutorial"},
+      {name:"V-Ups",type:"core",sets:"3",reps:"15 reps",rpe:"8",
+       muscles:["Rectus Abdominis","Hip Flexors"],
+       cue:"Reach hands and feet together at peak. Full compression at top.",
+       yt:"v-ups core exercise proper form tutorial"},
+      {name:"Russian Twists w/ Dumbbell",type:"core",sets:"3",reps:"20/side",rpe:"7",
+       muscles:["Obliques","Core","Hip Flexors"],
+       cue:"Feet OFF floor. Full rotation each rep. Targets obliques = 'spare tire' area.",
+       yt:"russian twist dumbbell oblique core tutorial"},
+      {name:"⭐ Burpee HIIT Finisher",type:"finisher",sets:"8",reps:"30s ON / 30s off",rpe:"9",
+       muscles:["Full Body","Cardio"],
+       cue:"8 rounds = 8 min. Maintains elevated heart rate post-lifting for max fat burn.",
+       yt:"burpee HIIT finisher exercise proper form"},
+      {name:"Cool-Down: Chest Opener, Lats, Triceps",type:"cooldown",sets:"—",reps:"5 min",rpe:"2",
+       muscles:["Chest","Lats","Triceps"],
+       cue:"Prioritize chest opener and lat stretch after heavy pressing.",
+       yt:"chest opener lat tricep stretch cool down"},
+    ]
+  },
+  {
+    day:"WED",fullDay:"Wednesday",color:"#EF4444",
+    label:"Beer Belly Destroyer",sublabel:"HIIT Circuit Day",
+    emoji:"🔥",duration:"~50 min",isRest:false,
+    goal:"Pure visceral fat targeting. HIIT burns 3× more belly fat than steady cardio.",
+    exercises:[
+      {name:"Warm-Up: High Knees, Arm Swings",type:"warmup",sets:"—",reps:"5 min",rpe:"4",
+       muscles:["Hip Flexors","Shoulders","Core"],
+       cue:"Get HR to 65% max before Circuit A. Never skip this — cold muscles = injury risk.",
+       yt:"high knees arm swings cardio warm up exercise"},
+      {name:"Circuit A — High Knees",type:"hiit",sets:"4",reps:"40s ON / 20s off",rpe:"9",
+       muscles:["Hip Flexors","Quads","Cardio"],
+       cue:"Pump arms aggressively, sprint tempo, drive knees above hip height.",
+       yt:"high knees exercise proper form cardio tutorial"},
+      {name:"Circuit A — Mountain Climbers",type:"hiit",sets:"4",reps:"40s ON / 20s off",rpe:"8",
+       muscles:["Core","Shoulders","Hip Flexors"],
+       cue:"Fast pace, hips level. No rest between exercises — circuit flows directly through.",
+       yt:"mountain climbers exercise proper form tutorial"},
+      {name:"Circuit A — Jump Squats",type:"hiit",sets:"4",reps:"40s ON / 20s off",rpe:"9",
+       muscles:["Quads","Glutes","Calves"],
+       cue:"Max height every rep. Quarter squat between reps to stay continuous.",
+       yt:"jump squat plyometric exercise proper form"},
+      {name:"Circuit A — Plank Shoulder Taps",type:"hiit",sets:"4",reps:"40s ON / 20s off",rpe:"7",
+       muscles:["Core","Shoulders","Anti-Rotation"],
+       cue:"Minimal hip rotation. 60 sec rest after all 4 exercises = 1 round.",
+       yt:"plank shoulder tap exercise tutorial"},
+      {name:"Circuit B — Burpees",type:"hiit",sets:"4",reps:"40s ON / 20s off",rpe:"10",
+       muscles:["Full Body","Cardio"],
+       cue:"ALL-OUT effort. Highest calorie-burn exercise in existence. Log reps per round.",
+       yt:"burpee exercise proper form full body tutorial"},
+      {name:"Circuit B — Jump Rope",type:"hiit",sets:"4",reps:"40s ON / 20s off",rpe:"8",
+       muscles:["Calves","Cardio","Coordination"],
+       cue:"Balls of feet, elbows close to body, steady rhythm. Maintain throughout 40 sec.",
+       yt:"jump rope exercise proper form tutorial"},
+      {name:"Circuit B — Bicycle Crunches",type:"hiit",sets:"4",reps:"40s ON / 20s off",rpe:"7",
+       muscles:["Obliques","Rectus Abdominis"],
+       cue:"SLOW — full rotation every rep. Quality targets obliques more than speed.",
+       yt:"bicycle crunch ab oblique exercise tutorial"},
+      {name:"Circuit B — V-Ups",type:"hiit",sets:"4",reps:"40s ON / 20s off",rpe:"8",
+       muscles:["Rectus Abdominis","Hip Flexors"],
+       cue:"90 sec rest after completing round. Track round count — beat it weekly.",
+       yt:"v-ups core exercise tutorial"},
+      {name:"⭐ Sprint Finisher",type:"finisher",sets:"6",reps:"30s ALL-OUT / 45s walk",rpe:"10",
+       muscles:["Full Body","Cardio"],
+       cue:"Treadmill or outdoor. Target 90-95% max HR. Highest afterburn of any finisher.",
+       yt:"sprint interval HIIT treadmill running workout"},
+      {name:"Cool-Down: Full Body Stretch + Breathing",type:"cooldown",sets:"—",reps:"5-10 min",rpe:"2",
+       muscles:["Full Body"],
+       cue:"Deep belly breathing activates parasympathetic nervous system. Lowers cortisol.",
+       yt:"full body cool down stretch deep breathing"},
+    ]
+  },
+  {
+    day:"THU",fullDay:"Thursday",color:"#3B82F6",
+    label:"Upper Body Pull",sublabel:"Zone 2 Cardio",
+    emoji:"🎯",duration:"~60 min",isRest:false,
+    goal:"Build back, biceps, rear delts. A wide back makes the waist look dramatically narrower.",
+    exercises:[
+      {name:"Warm-Up: Band Pull-Aparts, Scapular Retractions",type:"warmup",sets:"—",reps:"5 min",rpe:"4",
+       muscles:["Rear Delts","Rotator Cuff","Rhomboids"],
+       cue:"Scapular health is critical. Retract and depress shoulder blades before any loading.",
+       yt:"band pull apart scapular retraction warm up tutorial"},
+      {name:"Bent-Over Rows (Dumbbells or Barbell)",type:"compound",sets:"4",reps:"10-12 reps",rpe:"8",
+       muscles:["Lats","Rhomboids","Rear Delts","Biceps"],
+       cue:"Flat back (hinge 45°), drive elbows past hips. Squeeze shoulder blades 1 sec at top.",
+       yt:"bent over row dumbbell barbell proper form tutorial"},
+      {name:"Single-Arm Dumbbell Row",type:"compound",sets:"4",reps:"12/side",rpe:"8",
+       muscles:["Lats","Mid Traps","Rhomboids"],
+       cue:"Full stretch at bottom, full contraction at top. Biggest back builder in your gym.",
+       yt:"single arm dumbbell row proper form bench tutorial"},
+      {name:"Renegade Rows",type:"compound",sets:"3",reps:"12/side",rpe:"8",
+       muscles:["Lats","Core","Rhomboids","Triceps"],
+       cue:"Core braced HARDER than a plank. ZERO hip rotation per rep. Feet wide for stability.",
+       yt:"renegade row exercise proper form tutorial"},
+      {name:"Face Pulls / Rear Delt Flyes",type:"isolation",sets:"3",reps:"15 reps",rpe:"6",
+       muscles:["Rear Delts","Rotator Cuff","Mid Traps"],
+       cue:"Elbows flared HIGH above shoulder height. External rotate wrists at end. Shoulder health essential.",
+       yt:"face pull rear delt fly exercise tutorial"},
+      {name:"Dumbbell Bicep Curls",type:"isolation",sets:"3",reps:"12 reps",rpe:"6",
+       muscles:["Biceps Brachii","Brachialis"],
+       cue:"Elbows PINNED to ribs — they never move. 3-second slow descent builds most muscle.",
+       yt:"dumbbell bicep curl proper form tutorial slow eccentric"},
+      {name:"Hammer Curls",type:"isolation",sets:"3",reps:"12 reps",rpe:"6",
+       muscles:["Brachialis","Brachioradialis","Biceps"],
+       cue:"Neutral grip — thumbs up. Alternate arms. Brachialis pushes bicep up = bigger peak.",
+       yt:"hammer curl dumbbell proper form tutorial"},
+      {name:"✅ Zone 2 Walk / Jog (Post-Lift)",type:"cardio",sets:"1",reps:"20-25 min",rpe:"4-5",
+       muscles:["Cardio","Fat Oxidation"],
+       cue:"50-60% max HR, nasal breathing ONLY. Fat oxidation zone — burns fat directly as fuel.",
+       yt:"zone 2 cardio fat burning aerobic exercise tutorial"},
+      {name:"Cool-Down: Lats, Biceps, Rear Delts",type:"cooldown",sets:"—",reps:"5 min",rpe:"2",
+       muscles:["Lats","Biceps","Rear Delts"],
+       cue:"Lat stretch is critical — tight lats compress the waist and reduce range of motion.",
+       yt:"lat stretch bicep rear delt cool down tutorial"},
+    ]
+  },
+  {
+    day:"FRI",fullDay:"Friday",color:"#F59E0B",
+    label:"Full Body Compound",sublabel:"AMRAP Finisher",
+    emoji:"⚡",duration:"~65 min",isRest:false,
+    goal:"Heaviest compound lifts of the week. Most recomposition stimulus per session.",
+    exercises:[
+      {name:"Warm-Up: Hip Swings, Inchworms, Jump Rope",type:"warmup",sets:"—",reps:"5 min",rpe:"5",
+       muscles:["Hips","Spine","Shoulders"],
+       cue:"Elevate heart rate to 65% max and fully mobilize spine and hips before deadlifts.",
+       yt:"inchworm hip swing warm up exercise tutorial"},
+      {name:"Deadlifts (Dumbbell or Barbell)",type:"compound",sets:"5",reps:"6-8 reps",rpe:"9",
+       muscles:["Hamstrings","Glutes","Back","Traps"],
+       cue:"THE most effective recomp exercise. Hinge hips back, FLAT back, drive through heels. Add weight every week.",
+       yt:"deadlift proper form tutorial beginners barbell"},
+      {name:"Dumbbell Thrusters",type:"compound",sets:"4",reps:"12 reps",rpe:"9",
+       muscles:["Quads","Glutes","Deltoids","Triceps"],
+       cue:"Full squat into overhead press. Entire body simultaneously = extreme metabolic demand.",
+       yt:"dumbbell thruster squat to press exercise tutorial"},
+      {name:"⭐ Pull-Ups / Lat Pulldowns",type:"compound",sets:"4",reps:"8-10 reps",rpe:"8",
+       muscles:["Lats","Biceps","Rear Delts","Core"],
+       cue:"King of upper body pulling. If no pull-up bar, lat pulldown machine. Add reps weekly.",
+       yt:"pull up proper form tutorial beginners lat pulldown"},
+      {name:"Goblet Squats (Heavy)",type:"compound",sets:"3",reps:"12 reps",rpe:"8",
+       muscles:["Quads","Glutes","Core"],
+       cue:"Hold heaviest dumbbell at chest. Full depth. Elbows inside knees.",
+       yt:"heavy goblet squat dumbbell exercise tutorial"},
+      {name:"Dumbbell Chest Press (Floor or Bench)",type:"compound",sets:"3",reps:"12 reps",rpe:"7",
+       muscles:["Chest","Triceps","Front Delts"],
+       cue:"Lower to 90°, explosive press up. Floor press is equally effective to bench.",
+       yt:"dumbbell floor press chest exercise tutorial"},
+      {name:"⭐ 15-Min AMRAP Finisher",type:"finisher",sets:"—",reps:"15 min AMRAP",rpe:"10",
+       muscles:["Full Body","Cardio"],
+       cue:"5 Burpees → 10 Jump Squats → 15 Mountain Climbers. Log rounds. Beat it every week.",
+       yt:"AMRAP workout burpee jump squat mountain climber tutorial"},
+      {name:"Cool-Down: Full Body Stretch",type:"cooldown",sets:"—",reps:"5 min",rpe:"2",
+       muscles:["Hip Flexors","Quads","Chest","Lats"],
+       cue:"Hip flexors are priority after deadlifts and squats. Hold 30-40 sec each.",
+       yt:"full body cool down stretch after workout tutorial"},
+    ]
+  },
+  {
+    day:"SAT",fullDay:"Saturday",color:"#EC4899",
+    label:"Metabolic Conditioning",sublabel:"Giant Sets + Sprints",
+    emoji:"💥",duration:"~55 min",isRest:false,
+    goal:"Maximum fat burn. Giant sets + sprint work targets visceral belly fat through peak EPOC.",
+    exercises:[
+      {name:"Warm-Up: Jump Rope, Hip Circles, Arm Swings",type:"warmup",sets:"—",reps:"5 min",rpe:"5",
+       muscles:["Full Body"],
+       cue:"Reach 65% max HR before giant set. Never skip on max intensity day.",
+       yt:"jump rope warm up cardio exercise tutorial"},
+      {name:"Giant Set — Dumbbell Thrusters",type:"giant",sets:"4",reps:"15 reps",rpe:"9",
+       muscles:["Quads","Glutes","Deltoids"],
+       cue:"GIANT SET: Flow through all 5 exercises with 15 sec rest between. 90 sec after full round.",
+       yt:"dumbbell thruster exercise tutorial"},
+      {name:"Giant Set — Burpees",type:"giant",sets:"4",reps:"12 reps",rpe:"10",
+       muscles:["Full Body","Cardio"],
+       cue:"ALL-OUT. Log time per 12 reps — beat it next week. Progressive overload in conditioning.",
+       yt:"burpee exercise tutorial proper form"},
+      {name:"Giant Set — Mountain Climbers",type:"giant",sets:"4",reps:"30/side",rpe:"9",
+       muscles:["Core","Hip Flexors","Cardio"],
+       cue:"Maximum pace. Hips level. 15 sec rest, then immediately next exercise.",
+       yt:"mountain climber exercise tutorial"},
+      {name:"Giant Set — Jump Lunges",type:"giant",sets:"4",reps:"10/leg",rpe:"9",
+       muscles:["Quads","Glutes","Calves"],
+       cue:"Explosive switch mid-air. Soft landing absorbs through full leg. Protect knees.",
+       yt:"jump lunge plyometric exercise tutorial"},
+      {name:"Giant Set — Plank Hold",type:"giant",sets:"4",reps:"45 sec",rpe:"7",
+       muscles:["Core","Glutes","Shoulders"],
+       cue:"Last in giant set. 90 sec full rest, then repeat from Thrusters. 4 complete rounds.",
+       yt:"plank hold proper form core exercise"},
+      {name:"⭐ Sprint Finisher",type:"finisher",sets:"8",reps:"30s ALL-OUT / 45s walk",rpe:"10",
+       muscles:["Full Body","Cardio"],
+       cue:"8 rounds. Target 88-95% max HR. Creates 24-36 hr afterburn window.",
+       yt:"sprint interval HIIT running workout tutorial"},
+      {name:"Cool-Down: Full Body + Deep Breathing",type:"cooldown",sets:"—",reps:"8-10 min",rpe:"2",
+       muscles:["Full Body"],
+       cue:"4-7-8 breathing: inhale 4 sec, hold 7 sec, exhale 8 sec. Rapidly lowers cortisol.",
+       yt:"deep breathing cool down exercise recovery tutorial"},
+    ]
+  },
+  {
+    day:"SUN",fullDay:"Sunday",color:"#10B981",
+    label:"Full Recovery",sublabel:"Meal Prep + Foam Roll",
+    emoji:"😴",duration:"~45 min",isRest:true,
+    goal:"Recovery IS training. Muscle is built during rest. Treat this day as seriously as any other.",
+    exercises:[
+      {name:"Recovery Walk",type:"recovery",sets:"1",reps:"25-30 min",rpe:"3",
+       muscles:["Active Recovery"],
+       cue:"Easy enjoyable pace. Active blood flow speeds muscle repair. No HR target.",
+       yt:"recovery walk active recovery exercise benefits"},
+      {name:"Full Body Foam Rolling",type:"recovery",sets:"1",reps:"10 min",rpe:"2",
+       muscles:["Quads","IT Band","Lats","Glutes","Calves"],
+       cue:"Quads, IT band, lats, glutes, calves. 30-45 sec per tight spot. Mandatory.",
+       yt:"foam rolling full body technique tutorial"},
+      {name:"Static Stretching",type:"recovery",sets:"1",reps:"15 min",rpe:"2",
+       muscles:["Full Body"],
+       cue:"Full body. Hold 30-60 sec each. Focus on whatever is sore from Saturday.",
+       yt:"static stretching full body flexibility routine"},
+      {name:"Meal Prep",type:"admin",sets:"—",reps:"Priority",rpe:"—",
+       muscles:["Nutrition"],
+       cue:"Prep 4-5 days of meals: 165g protein/day. This single habit drives 80% of recomp results.",
+       yt:"high protein meal prep fitness bodybuilding"},
+      {name:"Hydration Check",type:"admin",sets:"—",reps:"3-4 liters",rpe:"—",
+       muscles:["Recovery"],
+       cue:"3-4 liters. Dehydration reduces fat oxidation up to 30%. Add electrolytes on training days.",
+       yt:"hydration fitness water intake health tips"},
+      {name:"Sleep Optimization",type:"admin",sets:"—",reps:"7-9 hours",rpe:"—",
+       muscles:["Recovery","Hormones"],
+       cue:"GH peaks in Stage 3-4 sleep. This is when fat cells are metabolized. Non-negotiable.",
+       yt:"sleep optimization fitness recovery tips"},
+      {name:"Review & Log the Week",type:"admin",sets:"—",reps:"10 min",rpe:"—",
+       muscles:["Progressive Overload"],
+       cue:"Log every weight lifted this week. Plan heavier numbers for next. Progressive overload is everything.",
+       yt:"workout log tracking fitness progressive overload tips"},
+    ]
+  }
+];
+
+const TYPE_COLORS={
+  warmup:"#4FC3F7",compound:"#FF6B35",isolation:"#A855F7",
+  hiit:"#EF4444",finisher:"#F59E0B",core:"#EC4899",
+  cardio:"#10B981",giant:"#EC4899",recovery:"#10B981",
+  cooldown:"#78909C",admin:"#78909C"
+};
+
+// YouTube search URL — opens YouTube app on iPhone
+const ytSearch = q => `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let state = {
+  dayIdx: (() => { const d=new Date().getDay(); return d===0?6:d-1; })(),
+  selEx: null,
+  completed: JSON.parse(localStorage.getItem('rc_done')||'{}'),
+  view: 'list' // 'list' | 'detail'
+};
+
+function saveCompleted(){localStorage.setItem('rc_done',JSON.stringify(state.completed));}
+function key(di,ei){return `${di}-${ei}`;}
+function dayDone(di){return WEEK[di].exercises.filter((_,ei)=>state.completed[key(di,ei)]).length;}
+function totalDone(){return WEEK.reduce((a,_,di)=>a+dayDone(di),0);}
+function totalEx(){return WEEK.reduce((a,d)=>a+d.exercises.length,0);}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render(){
+  const root=document.getElementById('root');
+  const today=WEEK[state.dayIdx];
+  const c=today.color;
+  const pct=Math.round((totalDone()/totalEx())*100);
+  const dDone=dayDone(state.dayIdx);
+
+  let detailHtml='';
+  if(state.selEx!==null && state.view==='detail'){
+    const ex=today.exercises[state.selEx];
+    const k=key(state.dayIdx,state.selEx);
+    const isDone=!!state.completed[k];
+    const tc=TYPE_COLORS[ex.type]||c;
+    const hasStats=ex.sets!=='—'||ex.reps!=='—';
+    const statsHtml=hasStats?`
+      <div class="stats-row">
+        ${ex.sets!=='—'?`<div class="stat-box" style="border-color:${tc}30"><div class="stat-lbl">SETS</div><div class="stat-val" style="color:${tc}">${ex.sets}</div></div>`:''}
+        ${ex.reps!=='—'?`<div class="stat-box" style="border-color:${tc}30"><div class="stat-lbl">REPS</div><div class="stat-val" style="color:${tc}">${ex.reps}</div></div>`:''}
+        ${ex.rpe!=='—'?`<div class="stat-box" style="border-color:${tc}30"><div class="stat-lbl">RPE</div><div class="stat-val" style="color:${tc}">${ex.rpe}</div></div>`:''}
+      </div>`:'';
+
+    const muscleHtml=ex.muscles.map(m=>`<span class="muscle-tag" style="background:${tc}15;color:${tc};border-color:${tc}30">${m}</span>`).join('');
+
+    detailHtml=`
+      <div class="detail">
+        <div class="detail-inner">
+          <button class="back-btn" onclick="goBack()">← BACK</button>
+          <div class="det-type" style="color:${tc}">${ex.type.toUpperCase()}</div>
+          <div class="det-name">${ex.name}</div>
+          ${statsHtml}
+
+          <!-- VIDEO CARD — YouTube search, opens YouTube app on iPhone -->
+          <a class="vid-fallback" href="${ytSearch(ex.yt)}" target="_blank" rel="noopener"
+            style="background:linear-gradient(135deg,${tc}18 0%,#0c1929 100%);border-color:${tc}30">
+            <div style="font-size:44px">▶️</div>
+            <div class="vid-fallback-text">${ex.name}</div>
+            <div class="vid-fallback-sub">Tap to find tutorials on YouTube</div>
+            <div class="vid-fallback-btn" style="background:${c}">WATCH TUTORIAL →</div>
+          </a>
+
+          <div class="muscles" style="margin-top:10px">${muscleHtml}</div>
+
+          <div class="cue-box" style="border-color:${tc}">
+            <div class="cue-lbl" style="color:${tc}">⚡ COACHING CUE</div>
+            <p class="cue-text">"${ex.cue}"</p>
+          </div>
+
+          <button class="mark-btn ${isDone?'done':''}" 
+            style="${isDone?'':'background:'+tc+'20;border-color:'+tc+';color:'+tc}"
+            onclick="toggleDone(${state.dayIdx},${state.selEx})">
+            ${isDone?'✓  COMPLETED':'MARK COMPLETE'}
+          </button>
+
+          <div class="nav-row">
+            <button class="nav-btn prev" onclick="navEx(-1)" ${state.selEx===0?'disabled':''}>← PREV</button>
+            <button class="nav-btn next-active" 
+              style="background:${state.selEx===today.exercises.length-1?'transparent':c};border-color:${c};color:${state.selEx===today.exercises.length-1?c:'#fff'}"
+              onclick="navEx(1)" ${state.selEx===today.exercises.length-1?'disabled':''}>NEXT →</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  const listItems=today.exercises.map((ex,ei)=>{
+    const k=key(state.dayIdx,ei);
+    const isDone=!!state.completed[k];
+    const tc=TYPE_COLORS[ex.type]||c;
+    const isSel=state.selEx===ei && state.view==='detail';
+    return `
+      <div class="ex-row${isSel?' sel':''}" style="--c:${c}" onclick="selectEx(${ei})">
+        <div class="ex-dot${isDone?' ready':''}"></div>
+        <div style="flex:1;min-width:0">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-meta">
+            <span class="ex-type-label" style="color:${tc}">${ex.type.toUpperCase()}</span>
+            ${ex.sets!=='—'?`<span class="ex-sets">${ex.sets}×${ex.reps}</span>`:''}
+          </div>
+        </div>
+        <button class="done-btn${isDone?' checked':''}" onclick="event.stopPropagation();toggleDone(${state.dayIdx},${ei})">
+          ${isDone?'✓':'○'}
+        </button>
+      </div>`;
+  }).join('');
+
+  const isDetail=state.view==='detail' && state.selEx!==null;
+
+  const bannerHtml=dDone===today.exercises.length?`
+    <div class="complete-banner">
+      <span class="banner-icon">🏆</span>
+      <div>
+        <div class="banner-title">${today.fullDay.toUpperCase()} COMPLETE</div>
+        <div class="banner-sub">${state.dayIdx<6?'Next: '+WEEK[state.dayIdx+1].fullDay+' — '+WEEK[state.dayIdx+1].label:'Full week done! 🎉'}</div>
+      </div>
+    </div>`:'';
+
+  root.innerHTML=`
+    <!-- HEADER -->
+    <div class="hdr">
+      <div class="hdr-top">
+        <div>
+          <div class="hdr-subtitle">20% → 11% BF · RECOMP PLAN</div>
+          <div class="hdr-title">7-DAY ROUTINE</div>
+        </div>
+        <div>
+          <div class="hdr-pct" style="color:${c}">${pct}%</div>
+          <div class="hdr-pct-label">WEEKLY</div>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${pct}%;background:linear-gradient(90deg,${c},#10b981)"></div>
+      </div>
+      <div class="day-tabs" id="dayTabs">
+        ${WEEK.map((day,di)=>{
+          const dd=dayDone(di);const tot=day.exercises.length;
+          const filledDots=Math.round((dd/tot)*5);
+          const dots=Array.from({length:Math.min(tot,5)},(_,i)=>`<div class="dot${i<filledDots?' filled':''}"></div>`).join('');
+          return `<button class="day-tab${di===state.dayIdx?' active':''}" style="--c:${day.color}" onclick="selectDay(${di})">
+            <span class="emoji">${day.emoji}</span>
+            <span class="label">${day.day}</span>
+            <div class="dots">${dots}</div>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- DAY HEADER -->
+    <div class="day-hdr" style="background:linear-gradient(135deg,${c}12 0%,transparent 100%)">
+      <div class="day-hdr-inner">
+        <div style="flex:1">
+          <div class="day-type" style="color:${c}">${today.isRest?'REST & RECOVERY':'TRAINING DAY'} · ${today.duration}</div>
+          <div class="day-name">${today.emoji} ${today.label}</div>
+          <div class="day-sub">${today.sublabel}</div>
+        </div>
+        <div class="day-counter" style="background:${c}20;border:1px solid ${c}40;color:${c}">
+          ${dDone}/${today.exercises.length}
+        </div>
+      </div>
+      <div class="day-goal" style="border-color:${c}40;color:#1e3a52">${today.goal}</div>
+    </div>
+
+    <!-- SPLIT BODY -->
+    <div class="body">
+      <div class="ex-list ${isDetail?'split':'full'}">
+        ${listItems}
+        <div style="height:max(16px,env(safe-area-inset-bottom))"></div>
+      </div>
+      ${detailHtml}
+    </div>
+
+    ${bannerHtml}
+  `;
+
+  // Scroll active tab into view
+  const tabs=document.getElementById('dayTabs');
+  if(tabs){
+    const activeTab=tabs.children[state.dayIdx];
+    if(activeTab) activeTab.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  }
+}
+
+// ─── EVENT HANDLERS ───────────────────────────────────────────────────────────
+function selectDay(di){
+  state.dayIdx=di; state.selEx=null; state.view='list';
+  render();
+}
+function selectEx(ei){
+  if(state.selEx===ei && state.view==='detail'){ state.selEx=null; state.view='list'; }
+  else { state.selEx=ei; state.view='detail'; }
+  render();
+}
+function goBack(){
+  state.view='list'; render();
+}
+function navEx(dir){
+  const today=WEEK[state.dayIdx];
+  const next=state.selEx+dir;
+  if(next>=0 && next<today.exercises.length){ state.selEx=next; render(); }
+}
+function toggleDone(di,ei){
+  const k=key(di,ei);
+  state.completed[k]=!state.completed[k];
+  saveCompleted();
+  render();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
