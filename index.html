@@ -83,26 +83,29 @@ button{-webkit-appearance:none;font-family:'Courier New',Courier,monospace;curso
 .statval{font-size:15px;font-weight:700}
 
 /* CAROUSEL (replaces single flip-book) */
-.carousel{border-radius:10px;overflow:hidden;background:#07111a;border:1px solid;position:relative}
-.carousel-track{display:flex;transition:transform .35s ease;will-change:transform}
-.carousel-slide{flex:0 0 100%;position:relative}
-.carousel-slide img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
-.carousel-badge{position:absolute;top:8px;left:8px;font-size:9px;font-weight:700;
-  letter-spacing:1.5px;padding:3px 9px;border-radius:4px;color:#fff;font-family:'Courier New',monospace}
-.carousel-src{position:absolute;bottom:8px;right:8px;font-size:8px;color:#94a3b8;
+/* AUTO-LOOP SLIDESHOW */
+.slideshow{border-radius:10px;overflow:hidden;background:#07111a;border:1px solid;position:relative}
+.ss-wrap{position:relative;aspect-ratio:4/3;overflow:hidden}
+.ss-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:0;transition:opacity .55s ease-in-out}
+.ss-frame.vis{opacity:1}
+.ss-badge{position:absolute;top:8px;left:8px;font-size:9px;font-weight:700;
+  letter-spacing:1.5px;padding:3px 9px;border-radius:4px;color:#fff;
+  font-family:'Courier New',monospace;pointer-events:none;
+  transition:opacity .3s}
+.ss-src{position:absolute;bottom:8px;right:8px;font-size:8px;color:#94a3b8;
   background:#00000099;padding:2px 8px;border-radius:10px;font-family:'Courier New',monospace}
-.carousel-nav{display:flex;align-items:center;justify-content:space-between;
-  padding:8px 12px;background:#060e18}
-.carousel-dots{display:flex;gap:5px}
-.cdot{width:6px;height:6px;border-radius:50%;background:#1e3040;transition:background .2s;cursor:pointer}
-.cdot.on{background:var(--cc)}
-.carousel-arrows{display:flex;gap:6px}
-.carrow{background:transparent;border:1px solid #1e3040;color:#374151;
-  width:28px;height:28px;border-radius:50%;font-size:12px;display:flex;
-  align-items:center;justify-content:center;transition:all .2s}
-.carrow:not(:disabled):hover{border-color:var(--cc);color:var(--cc)}
-.carrow:disabled{opacity:.25;cursor:default}
-.slide-lbl{font-size:9px;color:#374151;letter-spacing:1px;font-family:'Courier New',monospace}
+.ss-lbl{position:absolute;bottom:8px;left:8px;font-size:9px;font-weight:700;
+  letter-spacing:1px;padding:3px 9px;border-radius:4px;
+  font-family:'Courier New',monospace;pointer-events:none;
+  background:#000000bb;transition:opacity .3s}
+.ss-nav{display:flex;align-items:center;justify-content:space-between;
+  padding:7px 12px;background:#060e18}
+.ss-dots{display:flex;gap:5px}
+.sdot{width:7px;height:7px;border-radius:50%;background:#1e3040;
+  transition:background .25s;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sdot.on{background:var(--cc)}
+.ss-hint{font-size:9px;color:#374151;letter-spacing:1px;font-family:'Courier New',monospace}
 
 /* MUSCLES */
 .muscles{display:flex;flex-wrap:wrap;gap:5px}
@@ -124,8 +127,9 @@ button{-webkit-appearance:none;font-family:'Courier New',Courier,monospace;curso
 .banner{position:absolute;bottom:max(16px,env(safe-area-inset-bottom,16px));
   left:16px;right:16px;background:#071a0f;border:1px solid #22c55e;
   border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;
-  box-shadow:0 8px 32px #000a;animation:sup .3s ease}
-@keyframes sup{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+  box-shadow:0 8px 32px #000a;animation:banin .3s ease forwards,banout .4s ease 3.8s forwards}
+@keyframes banin{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+@keyframes banout{to{transform:translateY(20px);opacity:0;pointer-events:none}}
 </style>
 </head>
 <body><div id="root"></div>
@@ -703,8 +707,10 @@ let S={
   dayIdx:(()=>{const d=new Date().getDay();return d===0?6:d-1;})(),
   selEx:null, view:'list',
   completed:JSON.parse(localStorage.getItem('rc_done')||'{}'),
-  carSlide:{}, // { "key": slideIndex }
 };
+// Slideshow state — lives outside S so render() never clears it
+let _ssTimers={};   // intervalId per exercise key
+let _ssFrame={};    // current frame index per exercise key
 function save(){localStorage.setItem('rc_done',JSON.stringify(S.completed));}
 function key(di,ei){return `${di}-${ei}`;}
 function dayDone(di){return WEEK[di].exercises.filter((_,ei)=>S.completed[key(di,ei)]).length;}
@@ -727,22 +733,63 @@ function restoreScroll(){
   if(d)d.scrollTop=_detScroll;
 }
 
-// ─── CAROUSEL ────────────────────────────────────────────────────────────────
-function carKey(){return key(S.dayIdx,S.selEx);}
-function getCar(){return S.carSlide[carKey()]||0;}
-function setCar(n,total){
-  const k=carKey();
-  S.carSlide[k]=Math.max(0,Math.min(n,total-1));
-  // update DOM without full re-render — no scroll reset
-  const track=document.querySelector('.carousel-track');
-  if(track) track.style.transform=`translateX(-${S.carSlide[k]*100}%)`;
-  document.querySelectorAll('.cdot').forEach((d,i)=>{
-    d.classList.toggle('on',i===S.carSlide[k]);
-  });
-  const prev=document.querySelector('.carrow.prev');
-  const next=document.querySelector('.carrow.nxt');
-  if(prev)prev.disabled=(S.carSlide[k]===0);
-  if(next)next.disabled=(S.carSlide[k]===total-1);
+// ─── AUTO-LOOP SLIDESHOW ─────────────────────────────────────────────────────
+function ssKey(){return key(S.dayIdx,S.selEx);}
+
+function stopSlideshow(k){
+  if(_ssTimers[k]){clearInterval(_ssTimers[k]);delete _ssTimers[k];}
+}
+
+function startSlideshow(k,total){
+  stopSlideshow(k);
+  if(total<=1)return;
+  if(!(_ssFrame[k]>=0))_ssFrame[k]=0;
+  _ssTimers[k]=setInterval(()=>{
+    _ssFrame[k]=(_ssFrame[k]+1)%total;
+    updateSSDom(k,total);
+  },1800); // flip every 1.8 s
+}
+
+function updateSSDom(k,total){
+  const idx=_ssFrame[k]||0;
+  // Swap visible class on frames
+  document.querySelectorAll('.ss-frame').forEach((el,i)=>el.classList.toggle('vis',i===idx));
+  // Update badge/label text
+  const badge=document.querySelector('.ss-badge');
+  const lbl=document.querySelector('.ss-lbl');
+  const dots=document.querySelectorAll('.sdot');
+  // Get current exercise slides to read label
+  if(S.selEx===null)return;
+  const ex=WEEK[S.dayIdx].exercises[S.selEx];
+  const slides=IMG[ex.img]||IMG.recwalk;
+  if(badge)badge.textContent=`FRAME ${idx+1} / ${total}`;
+  if(lbl)lbl.textContent=slides[idx]?slides[idx].l:'';
+  dots.forEach((d,i)=>d.classList.toggle('on',i===idx));
+}
+
+// Swipe support — horizontal swipe on the slideshow area changes frame
+function initSwipe(el,k,total){
+  if(!el||total<=1)return;
+  let sx=0;
+  el.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+  el.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)<30)return;
+    _ssFrame[k]=((_ssFrame[k]||0)+(dx<0?1:-1)+total)%total;
+    updateSSDom(k,total);
+  },{passive:true});
+}
+
+// ─── COMPLETE ALL / RESET DAY ────────────────────────────────────────────────
+function completeAll(di){
+  saveScroll();
+  WEEK[di].exercises.forEach((_,ei)=>{S.completed[key(di,ei)]=true;});
+  save();render();
+}
+function uncompleteAll(di){
+  saveScroll();
+  WEEK[di].exercises.forEach((_,ei)=>{delete S.completed[key(di,ei)];});
+  save();render();
 }
 
 // ─── RENDER ───────────────────────────────────────────────────────────────────
@@ -770,19 +817,18 @@ function render(){
         <div class="statlbl">${l}</div><div class="statval" style="color:${tc}">${v}</div>
       </div>`).join('');
 
-    const slideHtml=slides.map((s,i)=>`
-      <div class="carousel-slide">
-        <img src="${s.u}" alt="${s.l}" loading="${i===0?'eager':'lazy'}"
-          onerror="this.style.opacity='.2';this.style.filter='grayscale(1)'"/>
-        <div class="carousel-badge" style="background:${tc}dd">FRAME ${i+1}</div>
-        <div class="carousel-src">free-exercise-db</div>
-        <div class="demo-label" style="background:#000000bb;color:${tc};
-          position:absolute;bottom:8px;left:8px;font-size:9px;font-weight:700;
-          letter-spacing:1px;padding:3px 9px;border-radius:4px">${s.l}</div>
-      </div>`).join('');
+    const sk=key(S.dayIdx,S.selEx);
+    const ssIdx=_ssFrame[sk]||0;
+
+    const frameHtml=slides.map((s,i)=>
+      `<img class="ss-frame${i===ssIdx?' vis':''}" src="${s.u}"
+        alt="${s.l}" loading="${i===0?'eager':'lazy'}"
+        onerror="this.style.opacity='.15';this.style.filter='grayscale(1)'">`
+    ).join('');
 
     const dotsHtml=slides.map((_,i)=>
-      `<div class="cdot${i===slideIdx?' on':''}" style="--cc:${tc}" onclick="setCar(${i},${slides.length})"></div>`
+      `<div class="sdot${i===ssIdx?' on':''}" style="--cc:${tc}"
+        onclick="tapDot(${i},'${sk}',${slides.length})"></div>`
     ).join('');
 
     const muscleHtml=ex.muscles.map(m=>
@@ -798,19 +844,16 @@ function render(){
         </div>
         <div class="statsrow">${statsHtml}</div>
 
-        <div class="carousel" style="border-color:${tc}30;--cc:${tc}">
-          <div class="carousel-track" style="transform:translateX(-${slideIdx*100}%)">
-            ${slideHtml}
+        <div class="slideshow" style="border-color:${tc}30;--cc:${tc}" id="ssWrap">
+          <div class="ss-wrap" id="ssInner">
+            ${frameHtml}
+            <div class="ss-badge" style="background:${tc}dd">FRAME ${ssIdx+1} / ${slides.length}</div>
+            <div class="ss-lbl" style="color:${tc}">${slides[ssIdx]?slides[ssIdx].l:''}</div>
+            <div class="ss-src">free-exercise-db</div>
           </div>
-          <div class="carousel-nav">
-            <div class="slide-lbl">${slides[slideIdx].l}</div>
-            <div class="carousel-dots">${dotsHtml}</div>
-            <div class="carousel-arrows">
-              <button class="carrow prev" style="--cc:${tc}" ${slideIdx===0?'disabled':''}
-                onclick="setCar(${slideIdx-1},${slides.length})">‹</button>
-              <button class="carrow nxt" style="--cc:${tc}" ${slideIdx===slides.length-1?'disabled':''}
-                onclick="setCar(${slideIdx+1},${slides.length})">›</button>
-            </div>
+          <div class="ss-nav">
+            <div class="ss-hint">AUTO-LOOP${slides.length>1?' · SWIPE TO SKIP':''}</div>
+            <div class="ss-dots">${dotsHtml}</div>
           </div>
         </div>
 
@@ -907,6 +950,16 @@ function render(){
         <div class="dctr" style="background:${c}20;border:1px solid ${c}40;color:${c}">${dDone}/${today.exercises.length}</div>
       </div>
       <div class="dgoal" style="border-color:${c}40">${today.goal}</div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button onclick="completeAll(${S.dayIdx})"
+          style="flex:1;padding:9px 0;border-radius:7px;font-size:10px;font-weight:700;
+            letter-spacing:1.5px;background:${c}22;border:1px solid ${c}55;color:${c};
+            font-family:'Courier New',monospace">✓ COMPLETE ALL</button>
+        <button onclick="uncompleteAll(${S.dayIdx})"
+          style="flex:1;padding:9px 0;border-radius:7px;font-size:10px;font-weight:700;
+            letter-spacing:1.5px;background:transparent;border:1px solid #1e3040;color:#374151;
+            font-family:'Courier New',monospace">↺ RESET DAY</button>
+      </div>
     </div>
 
     <div class="body">
@@ -919,21 +972,40 @@ function render(){
     ${bannerHtml}`;
 
   // Restore scroll AFTER DOM is written
-  requestAnimationFrame(()=>{ restoreScroll(); });
+  requestAnimationFrame(()=>{
+    restoreScroll();
+    // Start/restart slideshow for current exercise
+    if(isDetail && S.selEx!==null){
+      const ex=WEEK[S.dayIdx].exercises[S.selEx];
+      const slides=IMG[ex.img]||IMG.recwalk;
+      const sk=key(S.dayIdx,S.selEx);
+      startSlideshow(sk,slides.length);
+      initSwipe(document.getElementById('ssInner'),sk,slides.length);
+    }
+  });
+  // NOTE: intentionally NOT scrolling day tabs — user controls that themselves
+}
 
-  // Scroll active day tab into view
-  const tabs=document.getElementById('dayTabs');
-  if(tabs){const a=tabs.children[S.dayIdx];if(a)a.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}
+function tapDot(i,k,total){
+  _ssFrame[k]=i;
+  updateSSDom(k,total);
 }
 
 // ─── EVENT HANDLERS ───────────────────────────────────────────────────────────
-function selectDay(di){_listScroll=0;_detScroll=0;S.dayIdx=di;S.selEx=null;S.view='list';render();}
+function selectDay(di){
+  if(S.selEx!==null)stopSlideshow(key(S.dayIdx,S.selEx));
+  _listScroll=0;_detScroll=0;S.dayIdx=di;S.selEx=null;S.view='list';render();
+}
 function selectEx(ei){
+  if(S.selEx!==null)stopSlideshow(key(S.dayIdx,S.selEx));
   if(S.selEx===ei&&S.view==='detail'){S.selEx=null;S.view='list';}
   else{_detScroll=0;S.selEx=ei;S.view='detail';}
   render();
 }
-function goBack(){S.view='list';render();}
+function goBack(){
+  if(S.selEx!==null)stopSlideshow(key(S.dayIdx,S.selEx));
+  S.view='list';render();
+}
 function navEx(dir){
   const n=S.selEx+dir;
   if(n>=0&&n<WEEK[S.dayIdx].exercises.length){_detScroll=0;S.selEx=n;render();}
