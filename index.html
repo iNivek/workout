@@ -83,29 +83,39 @@ button{-webkit-appearance:none;font-family:'Courier New',Courier,monospace;curso
 .statval{font-size:15px;font-weight:700}
 
 /* CAROUSEL (replaces single flip-book) */
-/* AUTO-LOOP SLIDESHOW */
+/* AUTO-LOOP SLIDESHOW — pure CSS, zero JS timers */
 .slideshow{border-radius:10px;overflow:hidden;background:#07111a;border:1px solid;position:relative}
 .ss-wrap{position:relative;aspect-ratio:4/3;overflow:hidden}
 .ss-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  opacity:0;transition:opacity .55s ease-in-out}
-.ss-frame.vis{opacity:1}
-.ss-badge{position:absolute;top:8px;left:8px;font-size:9px;font-weight:700;
-  letter-spacing:1.5px;padding:3px 9px;border-radius:4px;color:#fff;
-  font-family:'Courier New',monospace;pointer-events:none;
-  transition:opacity .3s}
+  opacity:0;animation-fill-mode:both;animation-timing-function:ease-in-out}
 .ss-src{position:absolute;bottom:8px;right:8px;font-size:8px;color:#94a3b8;
   background:#00000099;padding:2px 8px;border-radius:10px;font-family:'Courier New',monospace}
-.ss-lbl{position:absolute;bottom:8px;left:8px;font-size:9px;font-weight:700;
-  letter-spacing:1px;padding:3px 9px;border-radius:4px;
-  font-family:'Courier New',monospace;pointer-events:none;
-  background:#000000bb;transition:opacity .3s}
-.ss-nav{display:flex;align-items:center;justify-content:space-between;
+.ss-bar{display:flex;align-items:center;justify-content:space-between;
   padding:7px 12px;background:#060e18}
-.ss-dots{display:flex;gap:5px}
-.sdot{width:7px;height:7px;border-radius:50%;background:#1e3040;
-  transition:background .25s;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.sdot.on{background:var(--cc)}
+.ss-pips{display:flex;gap:5px}
+.ss-pip{width:7px;height:7px;border-radius:50%;background:#1e3040}
 .ss-hint{font-size:9px;color:#374151;letter-spacing:1px;font-family:'Courier New',monospace}
+/* 2-frame loop: each frame visible 50% of 3.6s cycle */
+@keyframes ss2 { 0%{opacity:0} 6%{opacity:1} 44%{opacity:1} 50%{opacity:0} 100%{opacity:0} }
+.ss-n2 .ss-frame { animation: ss2 3.6s infinite; }
+.ss-n2 .ss-frame:nth-child(1){ animation-delay:0s }
+.ss-n2 .ss-frame:nth-child(2){ animation-delay:1.8s }
+/* 4-frame loop: each frame visible 25% of 7.2s cycle */
+@keyframes ss4 { 0%{opacity:0} 4%{opacity:1} 21%{opacity:1} 25%{opacity:0} 100%{opacity:0} }
+.ss-n4 .ss-frame { animation: ss4 7.2s infinite; }
+.ss-n4 .ss-frame:nth-child(1){ animation-delay:0s }
+.ss-n4 .ss-frame:nth-child(2){ animation-delay:1.8s }
+.ss-n4 .ss-frame:nth-child(3){ animation-delay:3.6s }
+.ss-n4 .ss-frame:nth-child(4){ animation-delay:5.4s }
+/* Active pip matches current frame — driven by animation timing */
+@keyframes pip2 { 0%{background:var(--cc)} 50%,100%{background:#1e3040} }
+@keyframes pip4 { 0%{background:var(--cc)} 25%,100%{background:#1e3040} }
+.ss-n2 .ss-pip:nth-child(1){ animation: pip2 3.6s 0s infinite }
+.ss-n2 .ss-pip:nth-child(2){ animation: pip2 3.6s 1.8s infinite }
+.ss-n4 .ss-pip:nth-child(1){ animation: pip4 7.2s 0s infinite }
+.ss-n4 .ss-pip:nth-child(2){ animation: pip4 7.2s 1.8s infinite }
+.ss-n4 .ss-pip:nth-child(3){ animation: pip4 7.2s 3.6s infinite }
+.ss-n4 .ss-pip:nth-child(4){ animation: pip4 7.2s 5.4s infinite }
 
 /* MUSCLES */
 .muscles{display:flex;flex-wrap:wrap;gap:5px}
@@ -708,9 +718,6 @@ let S={
   selEx:null, view:'list',
   completed:JSON.parse(localStorage.getItem('rc_done')||'{}'),
 };
-// Slideshow state — lives outside S so render() never clears it
-let _ssTimers={};   // intervalId per exercise key
-let _ssFrame={};    // current frame index per exercise key
 function save(){localStorage.setItem('rc_done',JSON.stringify(S.completed));}
 function key(di,ei){return `${di}-${ei}`;}
 function dayDone(di){return WEEK[di].exercises.filter((_,ei)=>S.completed[key(di,ei)]).length;}
@@ -733,67 +740,23 @@ function restoreScroll(){
   if(d)d.scrollTop=_detScroll;
 }
 
-// ─── AUTO-LOOP SLIDESHOW ─────────────────────────────────────────────────────
-function ssKey(){return key(S.dayIdx,S.selEx);}
-
-function stopSlideshow(k){
-  if(_ssTimers[k]){clearInterval(_ssTimers[k]);delete _ssTimers[k];}
-}
-
-function startSlideshow(k,total){
-  stopSlideshow(k);
-  if(total<=1)return;
-  if(!(_ssFrame[k]>=0))_ssFrame[k]=0;
-  _ssTimers[k]=setInterval(()=>{
-    _ssFrame[k]=(_ssFrame[k]+1)%total;
-    updateSSDom(k,total);
-  },1800); // flip every 1.8 s
-}
-
-function updateSSDom(k,total){
-  const idx=_ssFrame[k]||0;
-  // Swap visible class on frames
-  document.querySelectorAll('.ss-frame').forEach((el,i)=>el.classList.toggle('vis',i===idx));
-  // Update badge/label text
-  const badge=document.querySelector('.ss-badge');
-  const lbl=document.querySelector('.ss-lbl');
-  const dots=document.querySelectorAll('.sdot');
-  // Get current exercise slides to read label
-  if(S.selEx===null)return;
-  const ex=WEEK[S.dayIdx].exercises[S.selEx];
-  const slides=IMG[ex.img]||IMG.recwalk;
-  if(badge)badge.textContent=`FRAME ${idx+1} / ${total}`;
-  if(lbl)lbl.textContent=slides[idx]?slides[idx].l:'';
-  dots.forEach((d,i)=>d.classList.toggle('on',i===idx));
-}
-
-// Swipe support — horizontal swipe on the slideshow area changes frame
-function initSwipe(el,k,total){
-  if(!el||total<=1)return;
-  let sx=0;
-  el.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
-  el.addEventListener('touchend',e=>{
-    const dx=e.changedTouches[0].clientX-sx;
-    if(Math.abs(dx)<30)return;
-    _ssFrame[k]=((_ssFrame[k]||0)+(dx<0?1:-1)+total)%total;
-    updateSSDom(k,total);
-  },{passive:true});
-}
+// ─── SLIDESHOW: pure CSS animation — no JS timers needed ─────────────────────
+// stopSlideshow kept as no-op so old call sites don't throw
+function stopSlideshow(){}
 
 // ─── COMPLETE ALL / RESET DAY ────────────────────────────────────────────────
 function completeAll(di){
-  saveScroll();
   WEEK[di].exercises.forEach((_,ei)=>{S.completed[key(di,ei)]=true;});
   save();render();
 }
 function uncompleteAll(di){
-  saveScroll();
   WEEK[di].exercises.forEach((_,ei)=>{delete S.completed[key(di,ei)];});
   save();render();
 }
 
 // ─── RENDER ───────────────────────────────────────────────────────────────────
 function render(){
+  try{
   saveScroll();
   const root=document.getElementById('root');
   const today=WEEK[S.dayIdx];
@@ -817,45 +780,28 @@ function render(){
         <div class="statlbl">${l}</div><div class="statval" style="color:${tc}">${v}</div>
       </div>`).join('');
 
-    const sk=key(S.dayIdx,S.selEx);
-    const ssIdx=_ssFrame[sk]||0;
-
-    const frameHtml=slides.map((s,i)=>
-      `<img class="ss-frame${i===ssIdx?' vis':''}" src="${s.u}"
-        alt="${s.l}" loading="${i===0?'eager':'lazy'}"
-        onerror="this.style.opacity='.15';this.style.filter='grayscale(1)'">`
+    const nClass = slides.length===4 ? 'ss-n4' : 'ss-n2';
+    const frameHtml = slides.map((s,i)=>
+      '<img class="ss-frame" src="'+s.u+'" alt="'+s.l+'" loading="'+(i===0?'eager':'lazy')+'" '+
+      'onerror="this.style.opacity='.12'">'
+    ).join('');
+    const pipHtml = slides.map(()=>'<div class="ss-pip"></div>').join('');
+    const muscleHtml = ex.muscles.map(m=>
+      '<span class="mtag" style="background:'+tc+'18;color:'+tc+';border-color:'+tc+'30">'+m+'</span>'
     ).join('');
 
-    const dotsHtml=slides.map((_,i)=>
-      `<div class="sdot${i===ssIdx?' on':''}" style="--cc:${tc}"
-        onclick="tapDot(${i},'${sk}',${slides.length})"></div>`
-    ).join('');
-
-    const muscleHtml=ex.muscles.map(m=>
-      `<span class="mtag" style="background:${tc}18;color:${tc};border-color:${tc}30">${m}</span>`
-    ).join('');
-
-    detailHtml=`<div class="detail">
-      <div class="detail-inner">
-        <button class="backbtn" onclick="goBack()">← BACK</button>
-        <div>
-          <div class="detype" style="color:${tc}">${ex.type.toUpperCase()}</div>
-          <div class="denm">${ex.name}</div>
-        </div>
-        <div class="statsrow">${statsHtml}</div>
-
-        <div class="slideshow" style="border-color:${tc}30;--cc:${tc}" id="ssWrap">
-          <div class="ss-wrap" id="ssInner">
-            ${frameHtml}
-            <div class="ss-badge" style="background:${tc}dd">FRAME ${ssIdx+1} / ${slides.length}</div>
-            <div class="ss-lbl" style="color:${tc}">${slides[ssIdx]?slides[ssIdx].l:''}</div>
-            <div class="ss-src">free-exercise-db</div>
-          </div>
-          <div class="ss-nav">
-            <div class="ss-hint">AUTO-LOOP${slides.length>1?' · SWIPE TO SKIP':''}</div>
-            <div class="ss-dots">${dotsHtml}</div>
-          </div>
-        </div>
+    detailHtml='<div class="detail"><div class="detail-inner">'+
+      '<button class="backbtn" onclick="goBack()">← BACK</button>'+
+      '<div><div class="detype" style="color:'+tc+'">'+ex.type.toUpperCase()+'</div>'+
+      '<div class="denm">'+ex.name+'</div></div>'+
+      '<div class="statsrow">'+statsHtml+'</div>'+
+      '<div class="slideshow '+nClass+'" style="border-color:'+tc+'30">'+
+        '<div class="ss-wrap">'+frameHtml+'<div class="ss-src">free-exercise-db</div></div>'+
+        '<div class="ss-bar">'+
+          '<div class="ss-hint">AUTO-LOOP</div>'+
+          '<div class="ss-pips" style="--cc:'+tc+'">'+pipHtml+'</div>'+
+        '</div>'+
+      '</div>'+
 
         <div class="muscles">${muscleHtml}</div>
 
@@ -971,24 +917,10 @@ function render(){
     </div>
     ${bannerHtml}`;
 
-  // Restore scroll AFTER DOM is written
-  requestAnimationFrame(()=>{
-    restoreScroll();
-    // Start/restart slideshow for current exercise
-    if(isDetail && S.selEx!==null){
-      const ex=WEEK[S.dayIdx].exercises[S.selEx];
-      const slides=IMG[ex.img]||IMG.recwalk;
-      const sk=key(S.dayIdx,S.selEx);
-      startSlideshow(sk,slides.length);
-      initSwipe(document.getElementById('ssInner'),sk,slides.length);
-    }
-  });
-  // NOTE: intentionally NOT scrolling day tabs — user controls that themselves
-}
-
-function tapDot(i,k,total){
-  _ssFrame[k]=i;
-  updateSSDom(k,total);
+  // Restore scroll AFTER DOM is written — CSS handles animation, nothing else needed
+  requestAnimationFrame(restoreScroll);
+  // NOTE: intentionally NOT scrolling day tabs — user controls that
+  }catch(e){console.error('render error:',e);}
 }
 
 // ─── EVENT HANDLERS ───────────────────────────────────────────────────────────
