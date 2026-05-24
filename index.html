@@ -772,60 +772,65 @@ function render(){
     const isDone=!!S.completed[k];
     const tc=TC[ex.type]||c;
     const slides=IMG[ex.img]||IMG.recwalk;
-    const slideIdx=S.carSlide[k]||0;
 
-    const statsHtml=[['SETS',ex.sets],['REPS',ex.reps],['RPE',ex.rpe]]
-      .filter(([,v])=>v!=='—')
-      .map(([l,v])=>`<div class="statbox" style="border-color:${tc}35">
-        <div class="statlbl">${l}</div><div class="statval" style="color:${tc}">${v}</div>
-      </div>`).join('');
+    let statsHtml='';
+    [['SETS',ex.sets],['REPS',ex.reps],['RPE',ex.rpe]].forEach(function(p){
+      if(p[1]==='\u2014')return;
+      statsHtml+='<div class="statbox" style="border-color:'+tc+'35">'+
+        '<div class="statlbl">'+p[0]+'</div>'+
+        '<div class="statval" style="color:'+tc+'">'+p[1]+'</div></div>';
+    });
 
     const nClass = slides.length===4 ? 'ss-n4' : 'ss-n2';
-    const frameHtml = slides.map((s,i)=>
-      '<img class="ss-frame" src="'+s.u+'" alt="'+s.l+'" loading="'+(i===0?'eager':'lazy')+'" '+
-      'onerror="this.style.opacity='.12'">'
-    ).join('');
-    const pipHtml = slides.map(()=>'<div class="ss-pip"></div>').join('');
-    const muscleHtml = ex.muscles.map(m=>
-      '<span class="mtag" style="background:'+tc+'18;color:'+tc+';border-color:'+tc+'30">'+m+'</span>'
-    ).join('');
+    let frameHtml='';
+    slides.forEach(function(s,i){
+      frameHtml+='<img class="ss-frame" src="'+s.u+'" alt="'+s.l+'" '+
+        'loading="'+(i===0?'eager':'lazy')+'" onerror="this.style.opacity=0.12">';
+    });
+    let pipHtml='';
+    slides.forEach(function(){ pipHtml+='<div class="ss-pip"></div>'; });
+    let muscleHtml='';
+    ex.muscles.forEach(function(m){
+      muscleHtml+='<span class="mtag" style="background:'+tc+'18;color:'+tc+
+        ';border-color:'+tc+'30">'+m+'</span>';
+    });
 
-    detailHtml='<div class="detail"><div class="detail-inner">'+
-      '<button class="backbtn" onclick="goBack()">← BACK</button>'+
-      '<div><div class="detype" style="color:'+tc+'">'+ex.type.toUpperCase()+'</div>'+
-      '<div class="denm">'+ex.name+'</div></div>'+
-      '<div class="statsrow">'+statsHtml+'</div>'+
-      '<div class="slideshow '+nClass+'" style="border-color:'+tc+'30">'+
-        '<div class="ss-wrap">'+frameHtml+'<div class="ss-src">free-exercise-db</div></div>'+
-        '<div class="ss-bar">'+
-          '<div class="ss-hint">AUTO-LOOP</div>'+
-          '<div class="ss-pips" style="--cc:'+tc+'">'+pipHtml+'</div>'+
+    const isLast = S.selEx===today.exercises.length-1;
+    const markStyle = isDone ? '' : 'background:'+tc+'20;border-color:'+tc+';color:'+tc;
+    const nextStyle = isLast
+      ? 'background:transparent;border-color:'+c+';color:'+c
+      : 'background:'+c+';border-color:'+c+';color:#fff';
+
+    detailHtml=
+      '<div class="detail"><div class="detail-inner">'+
+        '<button class="backbtn" onclick="goBack()">\u2190 BACK</button>'+
+        '<div><div class="detype" style="color:'+tc+'">'+ex.type.toUpperCase()+'</div>'+
+        '<div class="denm">'+ex.name+'</div></div>'+
+        '<div class="statsrow">'+statsHtml+'</div>'+
+        '<div class="slideshow '+nClass+'" style="border-color:'+tc+'30">'+
+          '<div class="ss-wrap">'+frameHtml+
+            '<div class="ss-src">free-exercise-db</div></div>'+
+          '<div class="ss-bar">'+
+            '<div class="ss-hint">AUTO-LOOP</div>'+
+            '<div class="ss-pips" style="--cc:'+tc+'">'+pipHtml+'</div>'+
+          '</div>'+
         '</div>'+
-      '</div>'+
-
-        <div class="muscles">${muscleHtml}</div>
-
-        <div class="cuebox" style="border-color:${tc}">
-          <div class="cuelbl" style="color:${tc}">⚡ COACHING CUE</div>
-          <p class="cuetext">"${ex.cue}"</p>
-        </div>
-
-        <button class="markbtn${isDone?' done':''}"
-          style="${isDone?'':'background:'+tc+'20;border-color:'+tc+';color:'+tc}"
-          onclick="toggleDone(${S.dayIdx},${S.selEx})">
-          ${isDone?'✓  COMPLETED':'MARK COMPLETE'}
-        </button>
-
-        <div class="navrow">
-          <button class="navbtn" style="background:transparent;border-color:#1e3040;color:#374151"
-            onclick="navEx(-1)" ${S.selEx===0?'disabled':''}>← PREV</button>
-          <button class="navbtn"
-            style="background:${S.selEx===today.exercises.length-1?'transparent':c};border-color:${c};color:${S.selEx===today.exercises.length-1?c:'#fff'}"
-            onclick="navEx(1)" ${S.selEx===today.exercises.length-1?'disabled':''}>NEXT →</button>
-        </div>
-        <div class="spad"></div>
-      </div>
-    </div>`;
+        '<div class="muscles">'+muscleHtml+'</div>'+
+        '<div class="cuebox" style="border-color:'+tc+'">'+
+          '<div class="cuelbl" style="color:'+tc+'">\u26a1 COACHING CUE</div>'+
+          '<p class="cuetext">"'+ex.cue+'"</p>'+
+        '</div>'+
+        '<button class="markbtn'+(isDone?' done':'')+'" style="'+markStyle+'" '+
+          'onclick="toggleDone('+S.dayIdx+','+S.selEx+')">'+
+          (isDone?'\u2713  COMPLETED':'MARK COMPLETE')+'</button>'+
+        '<div class="navrow">'+
+          '<button class="navbtn" style="background:transparent;border-color:#1e3040;color:#374151" '+
+            'onclick="navEx(-1)" '+(S.selEx===0?'disabled':'')+'>\u2190 PREV</button>'+
+          '<button class="navbtn" style="'+nextStyle+'" '+
+            'onclick="navEx(1)" '+(isLast?'disabled':'')+'>NEXT \u2192</button>'+
+        '</div>'+
+        '<div class="spad"></div>'+
+      '</div></div>';
   }
 
   const listItems=today.exercises.map((ex,ei)=>{
