@@ -19,7 +19,8 @@ button{-webkit-appearance:none;font-family:'Courier New',Courier,monospace;curso
   max-width:480px;margin:0 auto;background:#070d14;overflow:hidden;position:relative}
 
 /* PHASE NAV */
-.pnav{display:flex;background:#050a10;border-bottom:1px solid #0d1e2e;flex-shrink:0}
+.pnav{display:flex;background:#050a10;border-bottom:1px solid #0d1e2e;flex-shrink:0;
+  padding-top:max(10px,env(safe-area-inset-top,10px))}
 .pnav a,.pnav span{flex:1;text-align:center;padding:9px 0;font-size:9px;letter-spacing:2px;
   font-weight:700;font-family:'Courier New',monospace;text-decoration:none;
   border-bottom:2px solid transparent}
@@ -40,7 +41,7 @@ button{-webkit-appearance:none;font-family:'Courier New',Courier,monospace;curso
 .lb-hint{color:#475569;font-size:9px;letter-spacing:1px;margin-top:8px;font-family:'Courier New',monospace}
 /* HEADER */
 .hdr{background:linear-gradient(160deg,#0c1929 0%,#100b1e 100%);border-bottom:1px solid #0d1e2e;
-  flex-shrink:0;padding-top:max(14px,env(safe-area-inset-top,14px));
+  flex-shrink:0;padding-top:14px;
   padding-left:16px;padding-right:16px;padding-bottom:0}
 .hdr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .hdr-sub{font-size:8px;color:#1e3040;letter-spacing:3px;margin-bottom:2px}
