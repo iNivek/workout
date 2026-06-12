@@ -18,6 +18,26 @@ button{-webkit-appearance:none;font-family:'Courier New',Courier,monospace;curso
 #root{display:flex;flex-direction:column;height:100svh;height:-webkit-fill-available;
   max-width:480px;margin:0 auto;background:#070d14;overflow:hidden;position:relative}
 
+/* PHASE NAV */
+.pnav{display:flex;background:#050a10;border-bottom:1px solid #0d1e2e;flex-shrink:0}
+.pnav a,.pnav span{flex:1;text-align:center;padding:9px 0;font-size:9px;letter-spacing:2px;
+  font-weight:700;font-family:'Courier New',monospace;text-decoration:none;
+  border-bottom:2px solid transparent}
+.pnav a{color:#4b5563}
+.pnav a.cur{color:#FF6B35;border-bottom-color:#FF6B35;background:#FF6B3512}
+.pnav span{color:#1e3040}
+/* LIGHTBOX */
+#lb{position:fixed;inset:0;background:#000000f2;z-index:99;display:none;
+  flex-direction:column;align-items:center;justify-content:center;padding:16px}
+#lb.open{display:flex}
+.lb-stage{position:relative;width:100%;max-width:560px;aspect-ratio:4/3;overflow:hidden;border-radius:12px}
+.lb-stage .ss-frame{object-fit:contain;background:#000}
+.lb-close{margin-top:18px;background:#ffffff14;border:1px solid #ffffff33;color:#e2e8f0;
+  padding:12px 34px;border-radius:24px;font-size:12px;letter-spacing:2px;
+  font-family:'Courier New',monospace}
+.lb-name{color:#e2e8f0;font-size:13px;font-weight:700;margin-bottom:12px;
+  font-family:'Courier New',monospace;text-align:center;padding:0 10px}
+.lb-hint{color:#475569;font-size:9px;letter-spacing:1px;margin-top:8px;font-family:'Courier New',monospace}
 /* HEADER */
 .hdr{background:linear-gradient(160deg,#0c1929 0%,#100b1e 100%);border-bottom:1px solid #0d1e2e;
   flex-shrink:0;padding-top:max(14px,env(safe-area-inset-top,14px));
@@ -142,7 +162,7 @@ button{-webkit-appearance:none;font-family:'Courier New',Courier,monospace;curso
 @keyframes banout{to{transform:translateY(20px);opacity:0;pointer-events:none}}
 </style>
 </head>
-<body><div id="root"></div>
+<body><div id="root"></div><div id="lb" onclick="closeLB()"></div>
 <script>
 const B='https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 
@@ -744,6 +764,29 @@ function restoreScroll(){
 // stopSlideshow kept as no-op so old call sites don't throw
 function stopSlideshow(){}
 
+
+// ─── LIGHTBOX — tap image for fullscreen view ───
+function openLB(){
+  if(S.selEx===null)return;
+  const ex=WEEK[S.dayIdx].exercises[S.selEx];
+  const slides=IMG[ex.img]||IMG.recwalk;
+  const nClass=slides.length===4?'ss-n4':'ss-n2';
+  let frames='';
+  slides.forEach(function(s){
+    frames+='<img class="ss-frame" src="'+s.u+'" alt="'+s.l+'">';
+  });
+  const lb=document.getElementById('lb');
+  lb.innerHTML='<div class="lb-name">'+ex.name+'</div>'+
+    '<div class="lb-stage '+nClass+'">'+frames+'</div>'+
+    '<div class="lb-hint">AUTO-LOOP \u00b7 TAP ANYWHERE TO CLOSE</div>'+
+    '<button class="lb-close">\u2715  CLOSE</button>';
+  lb.classList.add('open');
+}
+function closeLB(){
+  const lb=document.getElementById('lb');
+  lb.classList.remove('open'); lb.innerHTML='';
+}
+
 // ─── COMPLETE ALL / RESET DAY ────────────────────────────────────────────────
 function completeAll(di){
   WEEK[di].exercises.forEach((_,ei)=>{S.completed[key(di,ei)]=true;});
@@ -808,10 +851,10 @@ function render(){
         '<div class="denm">'+ex.name+'</div></div>'+
         '<div class="statsrow">'+statsHtml+'</div>'+
         '<div class="slideshow '+nClass+'" style="border-color:'+tc+'30">'+
-          '<div class="ss-wrap">'+frameHtml+
+          '<div class="ss-wrap" onclick="openLB()" style="cursor:zoom-in">'+frameHtml+
             '<div class="ss-src">free-exercise-db</div></div>'+
           '<div class="ss-bar">'+
-            '<div class="ss-hint">AUTO-LOOP</div>'+
+            '<div class="ss-hint">AUTO-LOOP \u00b7 TAP IMAGE TO ENLARGE</div>'+
             '<div class="ss-pips" style="--cc:'+tc+'">'+pipHtml+'</div>'+
           '</div>'+
         '</div>'+
@@ -867,6 +910,12 @@ function render(){
     </div>`:'';
 
   root.innerHTML=`
+    <div class="pnav">
+      <a href="index.html" class="cur">PHASE 1</a>
+      <a href="phase2.html">PHASE 2</a>
+      <a href="phase3.html">PHASE 3</a>
+      <a href="phase4.html">PHASE 4</a>
+    </div>
     <div class="hdr">
       <div class="hdr-top">
         <div><div class="hdr-sub">20% → 11% BF · RECOMP PLAN</div>
@@ -929,7 +978,7 @@ function render(){
 }
 
 // ─── EVENT HANDLERS ───────────────────────────────────────────────────────────
-function selectDay(di){
+function selectDay(di){closeLB();
   if(S.selEx!==null)stopSlideshow(key(S.dayIdx,S.selEx));
   _listScroll=0;_detScroll=0;S.dayIdx=di;S.selEx=null;S.view='list';render();
 }
