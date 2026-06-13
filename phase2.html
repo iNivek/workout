@@ -211,6 +211,9 @@ button{-webkit-appearance:none;font-family:'Courier New',Courier,monospace;curso
 .cal-day.rest{opacity:.55}
 .cal-day .cd-num{font-size:13px;font-weight:700;color:#cbd5e1;font-family:'Courier New',monospace}
 .cal-day.done .cd-num{color:#22c55e}
+.cal-day .cd-chk{display:none}
+.cal-day.done .cd-chk{display:block}
+.cal-day.done .cd-lbl{display:none}
 .cal-day .cd-chk{font-size:9px;line-height:1}
 .cal-day .cd-lbl{font-size:6px;color:#475569;letter-spacing:.3px;text-align:center;line-height:1.1;padding:0 1px}
 .cal-stats{display:flex;justify-content:space-around;margin-top:14px;padding-top:14px;border-top:1px solid #0d1e2e}
@@ -744,8 +747,38 @@ function bfCategory(bf,gender){
 
 // Calendar day completion (separate from workout-day completion)
 function calKey(i){return 'cal_'+i;}
+function lockScroll(sc,y,ms){
+  // Force scrollTop back to y for a short window, cancelling scroll-into-view
+  if(!sc) return;
+  const end=Date.now()+ms;
+  function pin(){ if(sc.scrollTop!==y) sc.scrollTop=y; }
+  sc.addEventListener('scroll',pin);
+  (function loop(){
+    pin();
+    if(Date.now()<end) requestAnimationFrame(loop);
+    else sc.removeEventListener('scroll',pin);
+  })();
+}
 function toggleCalDay(i){
-  PROG[calKey(i)]=!PROG[calKey(i)]; saveProg(PROG); renderProgress();
+  const sc=document.querySelector('.prog');
+  const y=sc?sc.scrollTop:0;            // remember exact position
+  const on=!PROG[calKey(i)];
+  PROG[calKey(i)]=on; saveProg(PROG);
+  // Update only the tapped cell — no full re-render
+  const cell=document.getElementById('cald'+i);
+  if(cell) cell.classList.toggle('done', on);
+  // Recompute the stats row in place
+  let done=0;
+  for(let k=0;k<CAL_DAYS;k++){ if(PROG[calKey(k)]) done++; }
+  const pct=Math.round(done/CAL_DAYS*100);
+  const nums=document.querySelectorAll('.cal-stat-num');
+  if(nums.length>=3){
+    nums[0].textContent=done;
+    nums[1].textContent=(CAL_DAYS-done);
+    nums[2].textContent=pct+'%';
+  }
+  // Hold scroll steady through any browser scroll-into-view for 300ms
+  lockScroll(sc,y,300);
 }
 
 function updateBF(){
@@ -809,9 +842,10 @@ function renderProgress(){
     const done=!!PROG[calKey(i)];
     if(done) doneCount++;
     const foc=focusMap[dow]||'';
-    calCells+='<div class="cal-day'+(done?' done':'')+(isRest?' rest':'')+'" onclick="toggleCalDay('+i+')">'+
+    calCells+='<div class="cal-day'+(done?' done':'')+(isRest?' rest':'')+'" id="cald'+i+'" onclick="toggleCalDay('+i+')">'+
       '<div class="cd-num">'+(i+1)+'</div>'+
-      (done?'<div class="cd-chk">✓</div>':'<div class="cd-lbl">'+foc+'</div>')+
+      '<div class="cd-chk">✓</div>'+
+      '<div class="cd-lbl">'+foc+'</div>'+
     '</div>';
   }
   const pctDone=Math.round(doneCount/CAL_DAYS*100);
