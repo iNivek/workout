@@ -161,6 +161,68 @@ button{-webkit-appearance:none;font-family:'Courier New',Courier,monospace;curso
   box-shadow:0 8px 32px #000a;animation:banin .3s ease forwards,banout .4s ease 3.8s forwards}
 @keyframes banin{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
 @keyframes banout{to{transform:translateY(20px);opacity:0;pointer-events:none}}
+
+/* ═══ MODE TABS (Workout | Progress) ═══ */
+.mtabs{display:flex;background:#070d14;border-bottom:1px solid #0d1e2e;flex-shrink:0}
+.mtab{flex:1;text-align:center;padding:12px 0;font-size:11px;letter-spacing:2px;font-weight:700;
+  font-family:'Courier New',monospace;color:#475569;background:transparent;border:none;
+  border-bottom:2px solid transparent;transition:all .15s}
+.mtab.on{color:#e2e8f0;border-bottom-color:var(--mc,#3B82F6)}
+/* ═══ PROGRESS VIEW ═══ */
+.prog{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#070d14}
+.prog-inner{padding:16px;padding-bottom:max(28px,env(safe-area-inset-bottom,28px));display:flex;flex-direction:column;gap:18px}
+.psec{background:#0b1520;border:1px solid #0d1e2e;border-radius:12px;overflow:hidden}
+.psec-hdr{padding:12px 14px;font-size:11px;font-weight:700;letter-spacing:2px;
+  display:flex;align-items:center;gap:8px;color:#fff}
+.psec-body{padding:14px}
+.psec-note{font-size:10px;color:#475569;line-height:1.5;margin-bottom:12px}
+/* Navy calculator */
+.calc-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.calc-lbl{flex:1;font-size:11px;color:#94a3b8;font-weight:600}
+.calc-input{width:90px;background:#070e18;border:1px solid #1e3040;color:#e2e8f0;
+  font-family:'Courier New',monospace;font-size:14px;font-weight:700;padding:8px 10px;
+  border-radius:7px;text-align:center;-webkit-appearance:none}
+.calc-input:focus{outline:none;border-color:var(--mc,#3B82F6)}
+.calc-unit{font-size:9px;color:#475569;width:34px}
+.calc-seg{display:flex;gap:6px}
+.calc-seg button{flex:1;padding:8px;border-radius:7px;font-size:10px;font-weight:700;
+  letter-spacing:1px;background:#070e18;border:1px solid #1e3040;color:#475569;font-family:'Courier New',monospace}
+.calc-seg button.on{border-color:var(--mc,#3B82F6);color:var(--mc,#3B82F6);background:#3B82F612}
+.calc-result{margin-top:14px;padding:16px;border-radius:10px;text-align:center;
+  background:linear-gradient(135deg,#0c1929,#0f0b1e);border:1px solid var(--mc,#3B82F6)}
+.calc-bf{font-size:38px;font-weight:700;line-height:1;font-family:'Courier New',monospace}
+.calc-bf-lbl{font-size:9px;letter-spacing:3px;color:#475569;margin-top:6px}
+.calc-cat{font-size:11px;font-weight:700;margin-top:10px;letter-spacing:1px}
+/* Weekly check-in table */
+.ci-row{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:1px;background:#0d1e2e}
+.ci-row.hdr-row .ci-cell{background:#0c1929;font-size:8px;letter-spacing:1px;color:#64748b;font-weight:700}
+.ci-cell{background:#0b1520;padding:9px 6px;font-size:11px;color:#cbd5e1;text-align:center}
+.ci-cell.wk{text-align:left;font-size:10px;font-weight:700;color:#94a3b8}
+.ci-cell input{width:100%;background:transparent;border:none;color:#e2e8f0;
+  font-family:'Courier New',monospace;font-size:12px;text-align:center;-webkit-appearance:none;padding:2px 0}
+.ci-cell input:focus{outline:none;color:var(--mc,#3B82F6)}
+/* 28-day calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-dow{text-align:center;font-size:8px;color:#475569;font-weight:700;letter-spacing:1px;padding-bottom:2px}
+.cal-day{aspect-ratio:1;border-radius:8px;background:#070e18;border:1px solid #16263a;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  cursor:pointer;transition:all .15s;position:relative}
+.cal-day.done{background:#15803d22;border-color:#22c55e}
+.cal-day.rest{opacity:.55}
+.cal-day .cd-num{font-size:13px;font-weight:700;color:#cbd5e1;font-family:'Courier New',monospace}
+.cal-day.done .cd-num{color:#22c55e}
+.cal-day .cd-chk{font-size:9px;line-height:1}
+.cal-day .cd-lbl{font-size:6px;color:#475569;letter-spacing:.3px;text-align:center;line-height:1.1;padding:0 1px}
+.cal-stats{display:flex;justify-content:space-around;margin-top:14px;padding-top:14px;border-top:1px solid #0d1e2e}
+.cal-stat{text-align:center}
+.cal-stat-num{font-size:22px;font-weight:700;font-family:'Courier New',monospace}
+.cal-stat-lbl{font-size:8px;letter-spacing:1px;color:#475569;margin-top:2px}
+/* roadmap mini */
+.rm-row{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;margin-bottom:6px;border:1px solid}
+.rm-phase{font-size:11px;font-weight:700;width:62px;flex-shrink:0}
+.rm-bf{font-size:10px;color:#94a3b8;flex:1}
+.rm-tag{font-size:14px}
+
 </style>
 </head>
 <body><div id="root"></div><div id="lb" onclick="closeLB()"></div>
@@ -733,6 +795,202 @@ const WEEK=[
   ]},
 ];
 
+
+// ─── per-phase tracker config ───
+let APP_MODE='workout';
+const MODE_COLOR='#3B82F6';
+const NAV_HTML=`<div class="pnav">
+      <a href="index.html" class="cur">PHASE 1</a>
+      <a href="phase2.html">PHASE 2</a>
+      <a href="phase3.html">PHASE 3</a>
+      <a href="phase4.html">PHASE 4</a>
+    </div>`;
+const CHECKIN_WEEKS=['Baseline (May 21)','Week 1 (May 28)','Week 2 (Jun 4)','Week 3 (Jun 11)','Week 4 (Jun 19)'];
+const CAL_FOCUS=['Recovery','Lower','Push','HIIT','Pull','Full Body','MetCon'];
+const CAL_START_DOW=4;
+const CAL_DAYS=30;
+const CAL_TITLE='30-DAY CALENDAR';
+const CAL_DATES='May 21 – Jun 19, 2026.';
+const CALC_NOTE='Your Phase 1 starting point. Waist at the navel, relaxed — do not suck in. Re-measure monthly.';
+const ROADMAP_HTML='<div class="rm-row" style="background:#3B82F622;border-color:#3B82F6"><span class="rm-phase" style="color:#3B82F6">PHASE 1</span><span class="rm-bf">20→17% BF</span><span class="rm-tag">▶</span></div><div class="rm-row" style="background:transparent;border-color:#16263a"><span class="rm-phase" style="color:#A855F7">Phase 2</span><span class="rm-bf">17→14% BF</span><span class="rm-tag">·</span></div><div class="rm-row" style="background:transparent;border-color:#16263a"><span class="rm-phase" style="color:#2E7D32">Phase 3</span><span class="rm-bf">14→12% BF</span><span class="rm-tag">·</span></div><div class="rm-row" style="background:transparent;border-color:#16263a"><span class="rm-phase" style="color:#6A1B9A">Phase 4</span><span class="rm-bf">12→11% BF</span><span class="rm-tag">🏁</span></div>';
+
+// ═══════════════════════════════════════════════════════════════════
+//  PROGRESS TRACKER — localStorage source of truth
+// ═══════════════════════════════════════════════════════════════════
+const PKEY='rc_progress_p1';  // replaced per-phase
+function loadProg(){try{return JSON.parse(localStorage.getItem(PKEY)||'{}');}catch(e){return {};}}
+function saveProg(p){localStorage.setItem(PKEY,JSON.stringify(p));}
+let PROG=loadProg();
+function setProg(path,val){
+  PROG[path]=val; saveProg(PROG);
+}
+
+// Navy body-fat formula (male/female)
+function navyBF(){
+  const g=PROG['calc_gender']||'Male';
+  const h=parseFloat(PROG['calc_height']);
+  const w=parseFloat(PROG['calc_waist']);
+  const n=parseFloat(PROG['calc_neck']);
+  const hp=parseFloat(PROG['calc_hip']);
+  if(!h||!w||!n) return null;
+  let bf;
+  if(g==='Male'){
+    if(w-n<=0) return null;
+    bf=495/(1.0324-0.19077*Math.log10(w-n)+0.15456*Math.log10(h))-450;
+  }else{
+    if(!hp||w+hp-n<=0) return null;
+    bf=495/(1.29579-0.35004*Math.log10(w+hp-n)+0.22100*Math.log10(h))-450;
+  }
+  return bf>0&&bf<70?bf:null;
+}
+function bfCategory(bf,gender){
+  if(bf==null) return ['—','#475569'];
+  const m=gender!=='Female';
+  if(m){
+    if(bf<6) return ['💛 Essential','#eab308'];
+    if(bf<14) return ['🏆 Athlete','#22c55e'];
+    if(bf<18) return ['✅ Fitness','#3b82f6'];
+    if(bf<25) return ['⚠ Average','#f59e0b'];
+    return ['❌ Above Average','#ef4444'];
+  }else{
+    if(bf<16) return ['💛 Essential','#eab308'];
+    if(bf<21) return ['🏆 Athlete','#22c55e'];
+    if(bf<25) return ['✅ Fitness','#3b82f6'];
+    if(bf<32) return ['⚠ Average','#f59e0b'];
+    return ['❌ Above Average','#ef4444'];
+  }
+}
+
+// Calendar day completion (separate from workout-day completion)
+function calKey(i){return 'cal_'+i;}
+function toggleCalDay(i){
+  PROG[calKey(i)]=!PROG[calKey(i)]; saveProg(PROG); renderProgress();
+}
+
+function updateBF(){
+  const g=PROG['calc_gender']||'Male';
+  const bf=navyBF();
+  const r=bfCategory(bf,g);
+  const bfEl=document.querySelector('.calc-bf');
+  const catEl=document.querySelector('.calc-cat');
+  if(bfEl) bfEl.textContent=(bf!=null?bf.toFixed(1)+'%':'--');
+  if(catEl){ catEl.textContent=r[0]; catEl.style.color=r[1]; }
+}
+function renderProgress(){
+  const root=document.getElementById('root');
+  const mc=MODE_COLOR;
+  // ─ Navy calculator ─
+  const g=PROG['calc_gender']||'Male';
+  const bf=navyBF();
+  const [catTxt,catColor]=bfCategory(bf,g);
+  const isF=g==='Female';
+  const fields=[
+    ['Height','calc_height','in'],
+    ['Waist','calc_waist','in'],
+    ['Neck','calc_neck','in'],
+  ];
+  if(isF) fields.push(['Hip','calc_hip','in']);
+  let calcRows='';
+  fields.forEach(function(f){
+    const v=PROG[f[1]]!=null?PROG[f[1]]:'';
+    calcRows+='<div class="calc-row"><span class="calc-lbl">'+f[0]+'</span>'+
+      '<input class="calc-input" type="number" inputmode="decimal" value="'+v+'" '+
+      'oninput="setProg(\''+f[1]+'\',this.value);updateBF()"/>'+
+      '<span class="calc-unit">'+f[2]+'</span></div>';
+  });
+  const bfDisp=bf!=null?bf.toFixed(1):'--';
+
+  // ─ Weekly check-ins ─
+  const weeks=CHECKIN_WEEKS;
+  let ciRows='<div class="ci-row hdr-row"><div class="ci-cell wk">WEEK</div>'+
+    '<div class="ci-cell">WEIGHT</div><div class="ci-cell">WAIST</div><div class="ci-cell">BF%</div></div>';
+  weeks.forEach(function(wk,i){
+    ciRows+='<div class="ci-row">'+
+      '<div class="ci-cell wk">'+wk+'</div>'+
+      '<div class="ci-cell"><input type="number" inputmode="decimal" placeholder="—" value="'+(PROG['ci'+i+'_wt']||'')+'" oninput="setProg(\'ci'+i+'_wt\',this.value)"/></div>'+
+      '<div class="ci-cell"><input type="number" inputmode="decimal" placeholder="—" value="'+(PROG['ci'+i+'_wa']||'')+'" oninput="setProg(\'ci'+i+'_wa\',this.value)"/></div>'+
+      '<div class="ci-cell"><input type="number" inputmode="decimal" placeholder="—" value="'+(PROG['ci'+i+'_bf']||'')+'" oninput="setProg(\'ci'+i+'_bf\',this.value)"/></div>'+
+    '</div>';
+  });
+
+  // ─ 28-day calendar ─
+  const focusMap=CAL_FOCUS;
+  const startDay=CAL_START_DOW; // 0=Sun..6=Sat for day 1
+  const dowNames=['S','M','T','W','T','F','S'];
+  let calCells='';
+  dowNames.forEach(function(d){calCells+='<div class="cal-dow">'+d+'</div>';});
+  // leading blanks
+  for(let b=0;b<startDay;b++) calCells+='<div></div>';
+  let doneCount=0;
+  for(let i=0;i<CAL_DAYS;i++){
+    const dow=(startDay+i)%7;
+    const isRest=dow===0; // Sunday rest
+    const done=!!PROG[calKey(i)];
+    if(done) doneCount++;
+    const foc=focusMap[dow]||'';
+    calCells+='<div class="cal-day'+(done?' done':'')+(isRest?' rest':'')+'" onclick="toggleCalDay('+i+')">'+
+      '<div class="cd-num">'+(i+1)+'</div>'+
+      (done?'<div class="cd-chk">✓</div>':'<div class="cd-lbl">'+foc+'</div>')+
+    '</div>';
+  }
+  const pctDone=Math.round(doneCount/CAL_DAYS*100);
+
+  root.innerHTML=
+    NAV_HTML+
+    '<div class="mtabs" style="--mc:'+mc+'">'+
+      '<button class="mtab" onclick="switchMode(\'workout\')">🏋️ WORKOUT</button>'+
+      '<button class="mtab on" onclick="switchMode(\'progress\')">📊 PROGRESS</button>'+
+    '</div>'+
+    '<div class="prog"><div class="prog-inner">'+
+      // BF Calculator
+      '<div class="psec"><div class="psec-hdr" style="background:'+mc+'"><span>📏</span> BODY FAT CALCULATOR</div>'+
+        '<div class="psec-body">'+
+          '<div class="psec-note">'+CALC_NOTE+'</div>'+
+          '<div class="calc-row"><span class="calc-lbl">Gender</span>'+
+            '<div class="calc-seg" style="flex:0 0 160px">'+
+              '<button class="'+(!isF?'on':'')+'" onclick="setProg(\'calc_gender\',\'Male\');renderProgress()">MALE</button>'+
+              '<button class="'+(isF?'on':'')+'" onclick="setProg(\'calc_gender\',\'Female\');renderProgress()">FEMALE</button>'+
+            '</div></div>'+
+          calcRows+
+          '<div class="calc-result">'+
+            '<div class="calc-bf" style="color:'+mc+'">'+bfDisp+(bf!=null?'%':'')+'</div>'+
+            '<div class="calc-bf-lbl">ESTIMATED BODY FAT</div>'+
+            '<div class="calc-cat" style="color:'+catColor+'">'+catTxt+'</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      // Roadmap
+      '<div class="psec"><div class="psec-hdr" style="background:'+mc+'"><span>🗓️</span> ROADMAP</div>'+
+        '<div class="psec-body">'+ROADMAP_HTML+'</div>'+
+      '</div>'+
+      // Weekly check-ins
+      '<div class="psec"><div class="psec-hdr" style="background:'+mc+'"><span>📅</span> WEEKLY CHECK-INS</div>'+
+        '<div class="psec-body">'+
+          '<div class="psec-note">Sunday mornings, fasted. Tap any cell to log. Saved automatically on this device.</div>'+
+          ciRows+
+        '</div>'+
+      '</div>'+
+      // 28-day calendar
+      '<div class="psec"><div class="psec-hdr" style="background:'+mc+'"><span>✅</span> '+CAL_TITLE+'</div>'+
+        '<div class="psec-body">'+
+          '<div class="psec-note">Tap each day you complete. '+CAL_DATES+'</div>'+
+          '<div class="cal-grid">'+calCells+'</div>'+
+          '<div class="cal-stats">'+
+            '<div class="cal-stat"><div class="cal-stat-num" style="color:'+mc+'">'+doneCount+'</div><div class="cal-stat-lbl">DONE</div></div>'+
+            '<div class="cal-stat"><div class="cal-stat-num" style="color:#475569">'+(CAL_DAYS-doneCount)+'</div><div class="cal-stat-lbl">LEFT</div></div>'+
+            '<div class="cal-stat"><div class="cal-stat-num" style="color:#22c55e">'+pctDone+'%</div><div class="cal-stat-lbl">COMPLETE</div></div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div></div>';
+}
+
+function switchMode(m){
+  APP_MODE=m;
+  if(m==='progress'){ PROG=loadProg(); renderProgress(); }
+  else { render(); }
+}
+
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let S={
   dayIdx:(()=>{const d=new Date().getDay();return d===0?6:d-1;})(),
@@ -917,6 +1175,7 @@ function render(){
       <a href="phase3.html">PHASE 3</a>
       <a href="phase4.html">PHASE 4</a>
     </div>
+    <div class="mtabs" style="--mc:#3B82F6"><button class="mtab on" onclick="switchMode('workout')">🏋️ WORKOUT</button><button class="mtab" onclick="switchMode('progress')">📊 PROGRESS</button></div>
     <div class="hdr">
       <div class="hdr-top">
         <div><div class="hdr-sub">20% → 11% BF · RECOMP PLAN</div>
