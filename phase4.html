@@ -685,6 +685,7 @@ const NAV_HTML=`<div class="pnav">
 const CHECKIN_WEEKS=['Baseline (Aug 15)','Week 13 (Aug 23)','Week 14 (Aug 30)','Week 15 (Sep 6)','Week 16 (Sep 11)'];
 const CAL_FOCUS=['Recovery','Lower Detail','Push Detail','Density','Pull Detail','Full Body','Density+LISS'];
 const CAL_START_DOW=6;
+const CAL_DAYS=28;
 const CAL_TITLE='28-DAY CALENDAR';
 const CAL_DATES='Aug 15 – Sep 11, 2026.';
 const CALC_NOTE='Run this EVERY Sunday in Phase 4. The finish line is a number: when it reads ≤11.0%, the program is complete.';
@@ -798,7 +799,7 @@ function renderProgress(){
   // leading blanks
   for(let b=0;b<startDay;b++) calCells+='<div></div>';
   let doneCount=0;
-  for(let i=0;i<28;i++){
+  for(let i=0;i<CAL_DAYS;i++){
     const dow=(startDay+i)%7;
     const isRest=dow===0; // Sunday rest
     const done=!!PROG[calKey(i)];
@@ -809,7 +810,7 @@ function renderProgress(){
       (done?'<div class="cd-chk">✓</div>':'<div class="cd-lbl">'+foc+'</div>')+
     '</div>';
   }
-  const pctDone=Math.round(doneCount/28*100);
+  const pctDone=Math.round(doneCount/CAL_DAYS*100);
 
   root.innerHTML=
     NAV_HTML+
@@ -853,7 +854,7 @@ function renderProgress(){
           '<div class="cal-grid">'+calCells+'</div>'+
           '<div class="cal-stats">'+
             '<div class="cal-stat"><div class="cal-stat-num" style="color:'+mc+'">'+doneCount+'</div><div class="cal-stat-lbl">DONE</div></div>'+
-            '<div class="cal-stat"><div class="cal-stat-num" style="color:#475569">'+(28-doneCount)+'</div><div class="cal-stat-lbl">LEFT</div></div>'+
+            '<div class="cal-stat"><div class="cal-stat-num" style="color:#475569">'+(CAL_DAYS-doneCount)+'</div><div class="cal-stat-lbl">LEFT</div></div>'+
             '<div class="cal-stat"><div class="cal-stat-num" style="color:#22c55e">'+pctDone+'%</div><div class="cal-stat-lbl">COMPLETE</div></div>'+
           '</div>'+
         '</div>'+
