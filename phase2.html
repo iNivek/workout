@@ -161,6 +161,68 @@ button{-webkit-appearance:none;font-family:'Courier New',Courier,monospace;curso
   box-shadow:0 8px 32px #000a;animation:banin .3s ease forwards,banout .4s ease 3.8s forwards}
 @keyframes banin{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
 @keyframes banout{to{transform:translateY(20px);opacity:0;pointer-events:none}}
+
+/* ═══ MODE TABS (Workout | Progress) ═══ */
+.mtabs{display:flex;background:#070d14;border-bottom:1px solid #0d1e2e;flex-shrink:0}
+.mtab{flex:1;text-align:center;padding:12px 0;font-size:11px;letter-spacing:2px;font-weight:700;
+  font-family:'Courier New',monospace;color:#475569;background:transparent;border:none;
+  border-bottom:2px solid transparent;transition:all .15s}
+.mtab.on{color:#e2e8f0;border-bottom-color:var(--mc,#3B82F6)}
+/* ═══ PROGRESS VIEW ═══ */
+.prog{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#070d14}
+.prog-inner{padding:16px;padding-bottom:max(28px,env(safe-area-inset-bottom,28px));display:flex;flex-direction:column;gap:18px}
+.psec{background:#0b1520;border:1px solid #0d1e2e;border-radius:12px;overflow:hidden}
+.psec-hdr{padding:12px 14px;font-size:11px;font-weight:700;letter-spacing:2px;
+  display:flex;align-items:center;gap:8px;color:#fff}
+.psec-body{padding:14px}
+.psec-note{font-size:10px;color:#475569;line-height:1.5;margin-bottom:12px}
+/* Navy calculator */
+.calc-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.calc-lbl{flex:1;font-size:11px;color:#94a3b8;font-weight:600}
+.calc-input{width:90px;background:#070e18;border:1px solid #1e3040;color:#e2e8f0;
+  font-family:'Courier New',monospace;font-size:14px;font-weight:700;padding:8px 10px;
+  border-radius:7px;text-align:center;-webkit-appearance:none}
+.calc-input:focus{outline:none;border-color:var(--mc,#3B82F6)}
+.calc-unit{font-size:9px;color:#475569;width:34px}
+.calc-seg{display:flex;gap:6px}
+.calc-seg button{flex:1;padding:8px;border-radius:7px;font-size:10px;font-weight:700;
+  letter-spacing:1px;background:#070e18;border:1px solid #1e3040;color:#475569;font-family:'Courier New',monospace}
+.calc-seg button.on{border-color:var(--mc,#3B82F6);color:var(--mc,#3B82F6);background:#3B82F612}
+.calc-result{margin-top:14px;padding:16px;border-radius:10px;text-align:center;
+  background:linear-gradient(135deg,#0c1929,#0f0b1e);border:1px solid var(--mc,#3B82F6)}
+.calc-bf{font-size:38px;font-weight:700;line-height:1;font-family:'Courier New',monospace}
+.calc-bf-lbl{font-size:9px;letter-spacing:3px;color:#475569;margin-top:6px}
+.calc-cat{font-size:11px;font-weight:700;margin-top:10px;letter-spacing:1px}
+/* Weekly check-in table */
+.ci-row{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:1px;background:#0d1e2e}
+.ci-row.hdr-row .ci-cell{background:#0c1929;font-size:8px;letter-spacing:1px;color:#64748b;font-weight:700}
+.ci-cell{background:#0b1520;padding:9px 6px;font-size:11px;color:#cbd5e1;text-align:center}
+.ci-cell.wk{text-align:left;font-size:10px;font-weight:700;color:#94a3b8}
+.ci-cell input{width:100%;background:transparent;border:none;color:#e2e8f0;
+  font-family:'Courier New',monospace;font-size:12px;text-align:center;-webkit-appearance:none;padding:2px 0}
+.ci-cell input:focus{outline:none;color:var(--mc,#3B82F6)}
+/* 28-day calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-dow{text-align:center;font-size:8px;color:#475569;font-weight:700;letter-spacing:1px;padding-bottom:2px}
+.cal-day{aspect-ratio:1;border-radius:8px;background:#070e18;border:1px solid #16263a;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  cursor:pointer;transition:all .15s;position:relative}
+.cal-day.done{background:#15803d22;border-color:#22c55e}
+.cal-day.rest{opacity:.55}
+.cal-day .cd-num{font-size:13px;font-weight:700;color:#cbd5e1;font-family:'Courier New',monospace}
+.cal-day.done .cd-num{color:#22c55e}
+.cal-day .cd-chk{font-size:9px;line-height:1}
+.cal-day .cd-lbl{font-size:6px;color:#475569;letter-spacing:.3px;text-align:center;line-height:1.1;padding:0 1px}
+.cal-stats{display:flex;justify-content:space-around;margin-top:14px;padding-top:14px;border-top:1px solid #0d1e2e}
+.cal-stat{text-align:center}
+.cal-stat-num{font-size:22px;font-weight:700;font-family:'Courier New',monospace}
+.cal-stat-lbl{font-size:8px;letter-spacing:1px;color:#475569;margin-top:2px}
+/* roadmap mini */
+.rm-row{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;margin-bottom:6px;border:1px solid}
+.rm-phase{font-size:11px;font-weight:700;width:62px;flex-shrink:0}
+.rm-bf{font-size:10px;color:#94a3b8;flex:1}
+.rm-tag{font-size:14px}
+
 </style>
 </head>
 <body><div id="root"></div><div id="lb" onclick="closeLB()"></div>
@@ -440,6 +502,52 @@ const IMG={
     {u:B+'Weighted_Pull_Ups/0.jpg',l:'Dead Hang'},
     {u:B+'Weighted_Pull_Ups/1.jpg',l:'Pull Up'},
   ],
+  // ── PHASE 2: Unilateral & Tempo ──
+  frontsquat:[{u:B+'Front_Squats_With_Two_Kettlebells/0.jpg',l:'Rack Position'},{u:B+'Front_Squats_With_Two_Kettlebells/1.jpg',l:'Full Depth'}],
+  reverselunge:[{u:B+'Crossover_Reverse_Lunge/0.jpg',l:'Stand'},{u:B+'Crossover_Reverse_Lunge/1.jpg',l:'Step Back'}],
+  slglutebridge:[{u:B+'Single_Leg_Glute_Bridge/0.jpg',l:'Down'},{u:B+'Single_Leg_Glute_Bridge/1.jpg',l:'Drive Up'}],
+  sumodeadlift:[{u:B+'Sumo_Deadlift/0.jpg',l:'Wide Setup'},{u:B+'Sumo_Deadlift/1.jpg',l:'Lockout'}],
+  boxsquat:[{u:B+'Box_Squat/0.jpg',l:'Stand'},{u:B+'Box_Squat/1.jpg',l:'Sit to Box'}],
+  slboxsquat:[{u:B+'Single-Leg_High_Box_Squat/0.jpg',l:'Stand'},{u:B+'Single-Leg_High_Box_Squat/1.jpg',l:'Lower'}],
+  landmine:[{u:B+'Landmine_180s/0.jpg',l:'Center'},{u:B+'Landmine_180s/1.jpg',l:'Rotate'}],
+  svendpress:[{u:B+'Svend_Press/0.jpg',l:'Chest'},{u:B+'Svend_Press/1.jpg',l:'Press Out'}],
+  aroundworld:[{u:B+'Around_The_Worlds/0.jpg',l:'Bottom'},{u:B+'Around_The_Worlds/1.jpg',l:'Overhead'}],
+  dbfloorpress:[{u:B+'Dumbbell_Floor_Press/0.jpg',l:'Bottom'},{u:B+'Dumbbell_Floor_Press/1.jpg',l:'Press Up'}],
+  bradford:[{u:B+'Bradford_Rocky_Presses/0.jpg',l:'Front'},{u:B+'Bradford_Rocky_Presses/1.jpg',l:'Behind Head'}],
+  tbarrow:[{u:B+'T-Bar_Row_with_Handle/0.jpg',l:'Hang'},{u:B+'T-Bar_Row_with_Handle/1.jpg',l:'Row Up'}],
+  reverseflye:[{u:B+'Reverse_Flyes/0.jpg',l:'Hang'},{u:B+'Reverse_Flyes/1.jpg',l:'Fly Out'}],
+  shrug:[{u:B+'Barbell_Shrug/0.jpg',l:'Down'},{u:B+'Barbell_Shrug/1.jpg',l:'Shrug Up'}],
+  invertedrow:[{u:B+'Inverted_Row/0.jpg',l:'Hang'},{u:B+'Inverted_Row/1.jpg',l:'Pull Chest Up'}],
+  highpulley:[{u:B+'Kneeling_High_Pulley_Row/0.jpg',l:'Extended'},{u:B+'Kneeling_High_Pulley_Row/1.jpg',l:'Pull In'}],
+  // ── PHASE 3: Power & Explosive ──
+  powerclean:[{u:B+'Power_Clean/0.jpg',l:'Floor'},{u:B+'Power_Clean/1.jpg',l:'Catch'}],
+  hangclean:[{u:B+'Alternating_Hang_Clean/0.jpg',l:'Hang'},{u:B+'Alternating_Hang_Clean/1.jpg',l:'Clean Up'}],
+  cleanpress:[{u:B+'Clean_and_Press/0.jpg',l:'Clean'},{u:B+'Clean_and_Press/1.jpg',l:'Press'}],
+  hangsnatch:[{u:B+'Hang_Snatch/0.jpg',l:'Hang'},{u:B+'Hang_Snatch/1.jpg',l:'Overhead'}],
+  sldeadlift:[{u:B+'Kettlebell_One-Legged_Deadlift/0.jpg',l:'Stand'},{u:B+'Kettlebell_One-Legged_Deadlift/1.jpg',l:'Hinge'}],
+  kbswing:[{u:B+'One-Arm_Kettlebell_Swings/0.jpg',l:'Back'},{u:B+'One-Arm_Kettlebell_Swings/1.jpg',l:'Swing Up'}],
+  tuckjump:[{u:B+'Knee_Tuck_Jump/0.jpg',l:'Load'},{u:B+'Knee_Tuck_Jump/1.jpg',l:'Tuck'}],
+  boxjumpmr:[{u:B+'Box_Jump_Multiple_Response/0.jpg',l:'Load'},{u:B+'Box_Jump_Multiple_Response/1.jpg',l:'Jump'}],
+  plyopush:[{u:B+'Plyo_Push-up/0.jpg',l:'Bottom'},{u:B+'Plyo_Push-up/1.jpg',l:'Push Off'}],
+  medball:[{u:B+'Medicine_Ball_Chest_Pass/0.jpg',l:'Load'},{u:B+'Medicine_Ball_Chest_Pass/1.jpg',l:'Throw'}],
+  overheadslam:[{u:B+'Overhead_Slam/0.jpg',l:'Overhead'},{u:B+'Overhead_Slam/1.jpg',l:'Slam'}],
+  hangingleg:[{u:B+'Hanging_Leg_Raise/0.jpg',l:'Hang'},{u:B+'Hanging_Leg_Raise/1.jpg',l:'Raise'}],
+  dbboxjump:[{u:B+'Dumbbell_Seated_Box_Jump/0.jpg',l:'Seated'},{u:B+'Dumbbell_Seated_Box_Jump/1.jpg',l:'Jump Up'}],
+  // ── PHASE 4: Isolation & Metabolic ──
+  legext:[{u:B+'Leg_Extensions/0.jpg',l:'Down'},{u:B+'Leg_Extensions/1.jpg',l:'Extend'}],
+  legcurl:[{u:B+'Lying_Leg_Curls/0.jpg',l:'Straight'},{u:B+'Lying_Leg_Curls/1.jpg',l:'Curl'}],
+  cableflye:[{u:B+'Flat_Bench_Cable_Flyes/0.jpg',l:'Open'},{u:B+'Flat_Bench_Cable_Flyes/1.jpg',l:'Squeeze'}],
+  inclineflye:[{u:B+'Incline_Cable_Flye/0.jpg',l:'Open'},{u:B+'Incline_Cable_Flye/1.jpg',l:'Squeeze'}],
+  lateralfront:[{u:B+'Side_Laterals_to_Front_Raise/0.jpg',l:'Side'},{u:B+'Side_Laterals_to_Front_Raise/1.jpg',l:'Front'}],
+  concentration:[{u:B+'Concentration_Curls/0.jpg',l:'Extended'},{u:B+'Concentration_Curls/1.jpg',l:'Peak'}],
+  preacher:[{u:B+'Cable_Preacher_Curl/0.jpg',l:'Bottom'},{u:B+'Cable_Preacher_Curl/1.jpg',l:'Top'}],
+  kickback:[{u:B+'Glute_Kickback/0.jpg',l:'Tucked'},{u:B+'Glute_Kickback/1.jpg',l:'Extend'}],
+  crossover:[{u:B+'Cable_Crossover/0.jpg',l:'Open'},{u:B+'Cable_Crossover/1.jpg',l:'Cross'}],
+  calfraise:[{u:B+'Calf_Raise_On_A_Dumbbell/0.jpg',l:'Down'},{u:B+'Calf_Raise_On_A_Dumbbell/1.jpg',l:'Up on Toes'}],
+  farmerwalk:[{u:B+'Farmers_Walk/0.jpg',l:'Carry'},{u:B+'Farmers_Walk/1.jpg',l:'Walk'}],
+  prowler:[{u:B+'Prowler_Sprint/0.jpg',l:'Drive'},{u:B+'Prowler_Sprint/1.jpg',l:'Push'}],
+  bearcrawl:[{u:B+'Bear_Crawl_Sled_Drags/0.jpg',l:'Set'},{u:B+'Bear_Crawl_Sled_Drags/1.jpg',l:'Crawl'}],
+  cablerussian:[{u:B+'Cable_Russian_Twists/0.jpg',l:'Center'},{u:B+'Cable_Russian_Twists/1.jpg',l:'Rotate'}],
   recwalk:[
     {u:B+'Jogging_Treadmill/0.jpg',l:'Easy Pace'},
     {u:B+'Jogging_Treadmill/1.jpg',l:'Walk'},
@@ -473,124 +581,295 @@ const TC={warmup:'#4FC3F7',compound:'#FF6B35',isolation:'#A855F7',hiit:'#EF4444'
   recovery:'#10B981',cooldown:'#78909C',admin:'#78909C'};
 
 const WEEK=[
-  {day:'MON',fullDay:'Monday',color:'#FF6B35',label:'Heavy Lower Body',sublabel:'5\u00d78 Squats \u00b7 Intensified',
-   emoji:'\ud83c\udfcb\ufe0f',duration:'~70 min',isRest:false,
-   goal:'PHASE 2: every load goes UP. 5\u00d78 squats, split squats replace lunges, 8-round finisher.',
+  {day:'MON',fullDay:'Monday',color:'#FF6B35',label:'Unilateral Lower Body',sublabel:'Single-Leg Strength · Tempo',
+   emoji:'🏋️',duration:'~65 min',isRest:false,
+   goal:'PHASE 2 THEME — Unilateral & Tempo: single-leg work corrects imbalances and recruits more stabilizers, burning more calories than bilateral lifts. Same fat-loss + muscle goal, fresh stimulus.',
    exercises:[
-    {name:'Hip Circles',type:'warmup',img:'hipcirc',sets:'\u2014',reps:'10\u00d7each dir',rpe:'4',muscles:['Hip Flexors','Glutes','IT Band'],cue:'Hands on hips, full circles 10\u00d7 each direction. Heavier loads demand the warm-up more, not less.'},
-    {name:'Leg Swings',type:'warmup',img:'legswing',sets:'\u2014',reps:'10\u00d7each leg',rpe:'4',muscles:['Hip Flexors','Hamstrings','Glutes'],cue:'Hold wall. Forward/back 10\u00d7, then side to side 10\u00d7. Gradually increasing range.'},
-    {name:'BW Squats Warm-Up',type:'warmup',img:'bodyweightsquat',sets:'\u2014',reps:'2\u00d710',rpe:'4',muscles:['Quads','Glutes','Ankles'],cue:'Slow, controlled, full depth. Then do 1 light set of goblet squats before working weight.'},
-    {name:'Goblet / Barbell Squats (HEAVIER)',type:'compound',img:'goblet',sets:'5',reps:'8 reps',rpe:'9',muscles:['Quads','Glutes','Hamstrings','Core'],cue:'PHASE 2: 5\u00d78 at a heavier load than Phase 1\u2019s 4\u00d710. Rest a full 2 min between sets \u2014 longer rest enables heavier weight. Add 5 lbs every week.'},
-    {name:'Romanian Deadlifts (HEAVIER)',type:'compound',img:'rdl',sets:'4',reps:'8 reps',rpe:'8',muscles:['Hamstrings','Glutes','Erectors'],cue:'Dropped to 8 reps so you can raise the load. Hinge unchanged: hips BACK, flat back, hamstring stretch, explosive hips up.'},
-    {name:'\u2705 Split Squats (Dumbbells)',type:'compound',img:'splitsquat',sets:'3',reps:'10/leg',rpe:'8',muscles:['Quads','Glutes','Hip Flexors'],cue:'REPLACES Walking Lunges. Static split stance, lower straight down. Elevate rear foot on the bench for a deeper stretch when ready.'},
-    {name:'Hip Thrusts (HEAVIER)',type:'compound',img:'hipthrust',sets:'4',reps:'12 reps',rpe:'8',muscles:['Glutes','Hamstrings','Core'],cue:'Up to 4 sets, heavier load. Drive through heels, 1-sec glute squeeze at top. No lower-back hyperextension.'},
-    {name:'Dumbbell Step-Ups w/ Knee Drive',type:'compound',img:'stepup',sets:'3',reps:'10/leg',rpe:'7',muscles:['Quads','Glutes','Hip Flexors'],cue:'Heavier dumbbells than Phase 1. Drive knee to chest at top. Controlled descent.'},
-    {name:'\u2b50 Jump Squat Finisher (8 Rounds)',type:'finisher',img:'jumpsquat',sets:'8',reps:'40s ON / 20s off',rpe:'10',muscles:['Quads','Glutes','Calves','Cardio'],cue:'Up from 6 to 8 rounds. ALL-OUT, max height. Conditioning progresses alongside strength in Phase 2.'},
-    {name:'Quad Stretch',type:'cooldown',img:'quadstr',sets:'\u2014',reps:'30-40 sec/side',rpe:'2',muscles:['Quads','Hip Flexors'],cue:'Pull heel to glute standing, or all-fours variation. Hold 30-40 sec each side.'},
-    {name:'Hamstring Stretch',type:'cooldown',img:'hamstr',sets:'\u2014',reps:'30-40 sec/side',rpe:'2',muscles:['Hamstrings'],cue:'Seated, one leg out. Hinge from hips, reach to foot. Exhale deeper. Never bounce.'},
-    {name:'Hip Flexor Stretch',type:'cooldown',img:'hipflexstr',sets:'\u2014',reps:'30-40 sec/side',rpe:'2',muscles:['Hip Flexors','Psoas'],cue:'Kneeling lunge, push hips forward and down. Critical after the 5\u00d78 squat volume.'},
+    {name:'Hip Circles & Leg Swings',type:'warmup',img:'hipcirc',sets:'—',reps:'10×each',rpe:'4',muscles:['Hip Flexors','Glutes','IT Band'],cue:'Full circles both directions, then leg swings front/back and side to side. Unilateral days demand extra hip prep.'},
+    {name:'BW Squats Warm-Up',type:'warmup',img:'bodyweightsquat',sets:'—',reps:'2×10',rpe:'4',muscles:['Quads','Glutes','Ankles'],cue:'Slow and controlled, full depth. Wake up the stabilizers before loading single-leg.'},
+    {name:'⭐ Front Squats (Kettlebell/DB)',type:'compound',img:'frontsquat',sets:'4',reps:'8 reps',rpe:'8',muscles:['Quads','Core','Upper Back','Glutes'],cue:'NEW: front-loaded shifts emphasis to quads and forces an upright torso. Weight at shoulders, elbows high, 3-sec descent. More core demand than back squats.'},
+    {name:'⭐ Bulgarian Split Squats',type:'compound',img:'reverselunge',sets:'3',reps:'10/leg',rpe:'9',muscles:['Quads','Glutes','Hip Flexors'],cue:'NEW unilateral centerpiece. Rear foot elevated on bench, lower straight down. Brutal stabilizer + glute work — the imbalance-corrector.'},
+    {name:'⭐ Sumo Deadlifts',type:'compound',img:'sumodeadlift',sets:'4',reps:'8 reps',rpe:'8',muscles:['Glutes','Adductors','Hamstrings','Back'],cue:'NEW stance: wide feet, toes out, hands inside knees. Hits glutes and inner thighs differently than conventional. Drive the floor apart.'},
+    {name:'⭐ Single-Leg Glute Bridge',type:'compound',img:'slglutebridge',sets:'3',reps:'12/leg',rpe:'7',muscles:['Glutes','Hamstrings','Core'],cue:'NEW: one leg extended, drive through the planted heel. 1-sec squeeze at top. Isolates each glute and exposes side-to-side weakness.'},
+    {name:'⭐ Box Squats (Explosive Up)',type:'compound',img:'boxsquat',sets:'3',reps:'10 reps',rpe:'7',muscles:['Quads','Glutes','Posterior Chain'],cue:'NEW: sit back to a box/bench, pause 1 sec, explode up. Teaches power from a dead stop and protects the knees.'},
+    {name:'⭐ Jump Squat Finisher (8 Rounds)',type:'finisher',img:'jumpsquat',sets:'8',reps:'40s ON / 20s off',rpe:'10',muscles:['Quads','Glutes','Calves','Cardio'],cue:'ALL-OUT, max height. The metabolic capstone after heavy single-leg work.'},
+    {name:'Quad & Hip Flexor Stretch',type:'cooldown',img:'quadstr',sets:'—',reps:'40 sec/side',rpe:'2',muscles:['Quads','Hip Flexors'],cue:'Hold 40 sec each side. Single-leg work tightens the hip flexors more than bilateral.'},
+    {name:'Hamstring Stretch',type:'cooldown',img:'hamstr',sets:'—',reps:'40 sec/side',rpe:'2',muscles:['Hamstrings'],cue:'Hinge from hips, reach to foot, exhale deeper. Never bounce.'},
   ]},
-  {day:'TUE',fullDay:'Tuesday',color:'#A855F7',label:'Upper Body Push',sublabel:'5\u00d78 Bench \u00b7 Arnold Press',
-   emoji:'\ud83d\udcaa',duration:'~60 min',isRest:false,
-   goal:'PHASE 2: 5\u00d78 bench, Arnold press rotation, decline push-ups added. More pressing volume everywhere.',
+  {day:'TUE',fullDay:'Tuesday',color:'#A855F7',label:'Push — Angles & Tempo',sublabel:'New Pressing Patterns',
+   emoji:'💪',duration:'~55 min',isRest:false,
+   goal:'PHASE 2 THEME: novel pressing angles (landmine, floor, Svend) hit the chest and shoulders from directions Phase 1 never trained — new muscle fibers, same fat-burning intensity.',
    exercises:[
-    {name:'Shoulder Rotations Warm-Up',type:'warmup',img:'armcirc',sets:'\u2014',reps:'10\u00d7each dir',rpe:'4',muscles:['Rotator Cuff','Deltoids'],cue:'Small to large circles, both directions. Cold shoulders + heavier presses = injury.'},
-    {name:'Dumbbell Bench Press (HEAVIER)',type:'compound',img:'floorpress',sets:'5',reps:'8 reps',rpe:'8',muscles:['Chest','Front Delts','Triceps'],cue:'5\u00d78 up from 4\u00d710-12. Heavier dumbbells, full range, 2-sec descent, explosive press.'},
-    {name:'\u2705 Arnold Press',type:'compound',img:'arnold',sets:'4',reps:'10 reps',rpe:'7',muscles:['All 3 Delt Heads','Triceps','Core'],cue:'REPLACES standard OHP. Start palms facing you at shoulder height, rotate palms forward as you press overhead. Hits front, side AND rear delts in one motion.'},
-    {name:'Incline Dumbbell Press (HEAVIER)',type:'compound',img:'incline',sets:'4',reps:'10 reps',rpe:'7',muscles:['Upper Chest','Front Delts','Triceps'],cue:'4 sets now. Bench 30-45\u00b0, elbows at 60\u00b0. Upper-chest shelf continues to build.'},
-    {name:'Dips (Weighted if Able)',type:'compound',img:'dips',sets:'4',reps:'8-10 reps',rpe:'8',muscles:['Chest','Triceps','Front Delts'],cue:'If you exceed 12 bodyweight reps, add load: dumbbell between knees or weighted backpack. Full depth always.'},
-    {name:'\u2b50 Decline Push-Ups',type:'compound',img:'declinepush',sets:'3',reps:'12-15 reps',rpe:'7',muscles:['Upper Chest','Front Delts','Core'],cue:'NEW: feet elevated on bench. Shifts load up the chest. Burnout finisher after dips \u2014 go close to failure.'},
-    {name:'Tricep Overhead Extension',type:'isolation',img:'tricepext',sets:'3',reps:'12 reps',rpe:'6',muscles:['Triceps Long Head'],cue:'Heavier dumbbell, 12 reps. Elbows close and pointing up. Full stretch behind head.'},
-    {name:'Plank Hold (60 sec)',type:'core',img:'plank',sets:'3',reps:'60 sec',rpe:'6',muscles:['Core','Glutes','Shoulders'],cue:'Extended from 50 to 60 sec. Brace everything, hips level, steady breathing.'},
-    {name:'V-Ups (18 reps)',type:'core',img:'vup',sets:'3',reps:'18 reps',rpe:'8',muscles:['Rectus Abdominis','Hip Flexors'],cue:'Up from 15. Hands to feet at peak, controlled descent, no slamming.'},
-    {name:'Russian Twists (Heavier DB)',type:'core',img:'russian',sets:'3',reps:'25/side',rpe:'7',muscles:['Obliques','Core'],cue:'Heavier dumbbell, 25 per side. Feet off floor, full rotation, touch floor each side.'},
-    {name:'\u2b50 Burpee Finisher (10 Rounds)',type:'finisher',img:'burpee4',sets:'10',reps:'30s ON / 30s off',rpe:'9',muscles:['Full Body','Cardio'],cue:'Up from 8 to 10 rounds = 10 min. Log reps per round \u2014 beat your Phase 1 numbers.'},
-    {name:'Chest Opener Stretch',type:'cooldown',img:'cheststr',sets:'\u2014',reps:'30 sec',rpe:'2',muscles:['Chest','Front Delts'],cue:'Hands clasped behind back, lift chest. Mandatory after the added pressing volume.'},
-    {name:'Lat / Overhead Stretch',type:'cooldown',img:'latstr',sets:'\u2014',reps:'30 sec/side',rpe:'2',muscles:['Lats','Teres Major'],cue:'Grip doorframe overhead, lean away. Exhale into it.'},
-    {name:'Tricep Stretch',type:'cooldown',img:'tricepstr',sets:'\u2014',reps:'30 sec/side',rpe:'2',muscles:['Triceps','Shoulder'],cue:'Arm overhead, bend elbow, gently push with other hand.'},
+    {name:'Shoulder Rotations & Push-Up Holds',type:'warmup',img:'armcirc',sets:'—',reps:'10×each',rpe:'4',muscles:['Rotator Cuff','Deltoids'],cue:'Circles small to large, then a 10-sec top-of-push-up hold. Warm the shoulders fully.'},
+    {name:'⭐ Dumbbell Floor Press',type:'compound',img:'dbfloorpress',sets:'4',reps:'10 reps',rpe:'8',muscles:['Chest','Triceps','Front Delts'],cue:'NEW: pressing from the floor limits range and shifts load to the triceps and mid-chest. Elbows stop at the floor, explosive press up. Easier on the shoulders.'},
+    {name:'⭐ Landmine Press',type:'compound',img:'landmine',sets:'4',reps:'10/side',rpe:'8',muscles:['Front Delts','Upper Chest','Core','Serratus'],cue:'NEW: angled single-arm press is shoulder-friendly and hammers the core anti-rotation. Press up and slightly across the body. A genuinely different shoulder stimulus.'},
+    {name:'⭐ Bradford Press',type:'compound',img:'bradford',sets:'3',reps:'12 reps',rpe:'7',muscles:['Deltoids','Triceps','Upper Back'],cue:'NEW: press from front to just behind the head and back — constant tension, no lockout rest. Light weight, the delts stay under load the entire set.'},
+    {name:'⭐ Svend Press',type:'isolation',img:'svendpress',sets:'3',reps:'15 reps',rpe:'6',muscles:['Inner Chest','Front Delts'],cue:'NEW: press two plates together and push straight out. The squeeze torches the inner chest — a finisher Phase 1 never had.'},
+    {name:'⭐ Around-the-Worlds',type:'isolation',img:'aroundworld',sets:'3',reps:'12 reps',rpe:'6',muscles:['Chest','Front Delts','Serratus'],cue:'NEW: dumbbells travel in a wide arc from hips to overhead. Stretches and contracts the chest through a huge range. Light and controlled.'},
+    {name:'Plank Hold',type:'core',img:'plank',sets:'3',reps:'60 sec',rpe:'6',muscles:['Core','Glutes','Shoulders'],cue:'Brace everything, hips level, steady breathing.'},
+    {name:'V-Ups',type:'core',img:'vup',sets:'3',reps:'18 reps',rpe:'8',muscles:['Rectus Abdominis','Hip Flexors'],cue:'Reach hands to feet at the peak, controlled descent.'},
+    {name:'⭐ Burpee Finisher (10 Rounds)',type:'finisher',img:'burpee4',sets:'10',reps:'30s ON / 30s off',rpe:'9',muscles:['Full Body','Cardio'],cue:'10 rounds = 10 min. Log reps per round and beat them weekly.'},
+    {name:'Chest Opener & Tricep Stretch',type:'cooldown',img:'cheststr',sets:'—',reps:'30 sec each',rpe:'2',muscles:['Chest','Triceps'],cue:'Clasp hands behind back and lift; then overhead tricep stretch each arm.'},
   ]},
-  {day:'WED',fullDay:'Wednesday',color:'#EF4444',label:'Beer Belly Destroyer',sublabel:'45/15 Protocol \u00b7 Denser HIIT',
-   emoji:'\ud83d\udd25',duration:'~50 min',isRest:false,
-   goal:'PHASE 2: work intervals stretch to 45s, rest shrinks to 15s. Same circuits, higher density = more visceral fat burned per session.',
+  {day:'WED',fullDay:'Wednesday',color:'#EF4444',label:'Tabata Fat Burner',sublabel:'20/10 Protocol · New Format',
+   emoji:'🔥',duration:'~50 min',isRest:false,
+   goal:'PHASE 2 THEME: swaps Phase 1\'s 40/20 work for true Tabata (20s max / 10s rest). Shorter, more violent intervals spike EPOC harder — a completely different cardio stressor.',
    exercises:[
-    {name:'High Knees Warm-Up',type:'warmup',img:'highknees',sets:'\u2014',reps:'2\u00d730 sec',rpe:'5',muscles:['Hip Flexors','Quads','Cardio'],cue:'Build to 65% max HR before Circuit A. Pump arms.'},
-    {name:'Circuit A \u2014 High Knees',type:'hiit',img:'highknees',sets:'4',reps:'45s ON / 15s off',rpe:'9',muscles:['Hip Flexors','Quads','Cardio'],cue:'NEW 45/15 protocol. Sprint tempo, knees above hips. Then straight to Mountain Climbers.'},
-    {name:'Circuit A \u2014 Mountain Climbers',type:'hiit',img:'mountainclimb',sets:'4',reps:'45s ON / 15s off',rpe:'8',muscles:['Core','Shoulders','Hip Flexors'],cue:'Max pace, hips level. 15 sec only, then Jump Squats.'},
-    {name:'Circuit A \u2014 Jump Squats',type:'hiit',img:'jumpsquat',sets:'4',reps:'45s ON / 15s off',rpe:'9',muscles:['Quads','Glutes','Calves'],cue:'Max height, soft landings. 15 sec, then Shoulder Taps.'},
-    {name:'Circuit A \u2014 Plank Shoulder Taps',type:'hiit',img:'shouldertap',sets:'4',reps:'45s ON / 15s off',rpe:'7',muscles:['Core','Shoulders','Anti-Rotation'],cue:'Zero hip rotation. 60 sec FULL REST = end of round. 4 rounds of Circuit A.'},
-    {name:'Circuit B \u2014 Burpees',type:'hiit',img:'burpee4',sets:'4',reps:'45s ON / 15s off',rpe:'10',muscles:['Full Body','Cardio'],cue:'ALL-OUT. 45 seconds is long \u2014 pace the first 20, push the last 25. Track total reps.'},
-    {name:'Circuit B \u2014 Jump Rope',type:'hiit',img:'ropejump',sets:'4',reps:'45s ON / 15s off',rpe:'8',muscles:['Calves','Cardio','Coordination'],cue:'Steady rhythm, balls of feet. Simulate if no rope.'},
-    {name:'Circuit B \u2014 Bicycle Crunches',type:'hiit',img:'oblique',sets:'4',reps:'45s ON / 15s off',rpe:'7',muscles:['Obliques','Rectus Abdominis'],cue:'Slow, full rotation \u2014 quality beats count even in intervals.'},
-    {name:'Circuit B \u2014 V-Ups',type:'hiit',img:'vup',sets:'4',reps:'45s ON / 15s off',rpe:'8',muscles:['Abs','Hip Flexors'],cue:'90 sec FULL REST ends the round. 4 rounds of Circuit B. Log rounds completed.'},
-    {name:'\u2b50 Sprint Finisher (8 Rounds)',type:'finisher',img:'sprint',sets:'8',reps:'30s ALL-OUT / 45s walk',rpe:'10',muscles:['Full Body','Cardio'],cue:'Up from 6 to 8 rounds. Treadmill 10-12 mph or outdoor 50m sprints. 90-95% max HR.'},
-    {name:'Full Body Stretch + 4-7-8 Breathing',type:'cooldown',img:'fullbodystr',sets:'\u2014',reps:'5-10 min',rpe:'2',muscles:['Full Body'],cue:'Inhale 4 \u2192 hold 7 \u2192 exhale 8, repeat 4\u00d7. Then rotate the 4 stretches shown. Cortisol control after the densest session of the week.'},
+    {name:'High Knees & Arm Swings Warm-Up',type:'warmup',img:'highknees',sets:'—',reps:'2×30 sec',rpe:'5',muscles:['Hip Flexors','Quads','Cardio'],cue:'Build to 65% max HR. Tabata is all-out from rep one — warm up thoroughly.'},
+    {name:'⭐ Tabata 1 — Burpees',type:'hiit',img:'burpee4',sets:'8',reps:'20s ON / 10s off',rpe:'10',muscles:['Full Body','Cardio'],cue:'NEW FORMAT: 8 rounds of 20s all-out / 10s rest = 4 min. Maximum reps each 20s. This is the classic Tabata protocol — brutal and brief.'},
+    {name:'⭐ Tabata 2 — Mountain Climbers',type:'hiit',img:'mountainclimb',sets:'8',reps:'20s ON / 10s off',rpe:'9',muscles:['Core','Shoulders','Hip Flexors'],cue:'8 rounds = 4 min. Sprint pace, hips level. Rest 90 sec after the block.'},
+    {name:'⭐ Tabata 3 — Jump Squats',type:'hiit',img:'jumpsquat',sets:'8',reps:'20s ON / 10s off',rpe:'10',muscles:['Quads','Glutes','Calves'],cue:'8 rounds = 4 min. Max height every rep. Quarter-squat between to stay continuous.'},
+    {name:'⭐ Tabata 4 — Push-Up to Shoulder Tap',type:'hiit',img:'pushup',sets:'8',reps:'20s ON / 10s off',rpe:'9',muscles:['Chest','Core','Shoulders'],cue:'NEW combo: one push-up, then tap each shoulder. 8 rounds = 4 min. 90 sec rest after.'},
+    {name:'⭐ Tabata 5 — High Knees',type:'hiit',img:'highknees',sets:'8',reps:'20s ON / 10s off',rpe:'9',muscles:['Hip Flexors','Quads','Cardio'],cue:'Final Tabata block. 8 rounds = 4 min. Knees above hips, sprint arms.'},
+    {name:'⭐ Sprint Finisher',type:'finisher',img:'sprint',sets:'8',reps:'30s ALL-OUT / 45s walk',rpe:'10',muscles:['Full Body','Cardio'],cue:'8 rounds. 90-95% max HR. The afterburn capstone.'},
+    {name:'Full Body Stretch + 4-7-8 Breathing',type:'cooldown',img:'fullbodystr',sets:'—',reps:'8 min',rpe:'2',muscles:['Full Body'],cue:'Inhale 4, hold 7, exhale 8, ×4. Then rotate the 4 stretches. Cortisol control after maximum-intensity intervals.'},
   ]},
-  {day:'THU',fullDay:'Thursday',color:'#3B82F6',label:'Upper Body Pull',sublabel:'5\u00d78 Rows \u00b7 Zone 2 \u00d7 30 min',
-   emoji:'\ud83c\udfaf',duration:'~65 min',isRest:false,
-   goal:'PHASE 2: 5\u00d78 rows, heavier everything, Zone 2 extends to 30 minutes. The V-taper phase.',
+  {day:'THU',fullDay:'Thursday',color:'#3B82F6',label:'Pull — Width & Thickness',sublabel:'New Row Patterns · Zone 2',
+   emoji:'🎯',duration:'~60 min',isRest:false,
+   goal:'PHASE 2 THEME: T-bar, inverted, and high-pulley rows attack the back from new angles to build the V-taper that makes the waist look narrower. Zone 2 holds at 25-30 min.',
    exercises:[
-    {name:'Band Pull-Aparts',type:'warmup',img:'bandpull',sets:'\u2014',reps:'3\u00d715',rpe:'4',muscles:['Rear Delts','Rhomboids','Rotator Cuff'],cue:'Arms straight, pull band to chest, squeeze blades. The most important shoulder warm-up there is.'},
-    {name:'Scapular Retractions',type:'warmup',img:'bentrow',sets:'\u2014',reps:'3\u00d712',rpe:'3',muscles:['Rhomboids','Mid Traps','Rear Delts'],cue:'Straight arms, pinch blades 2 sec, release. Teaches the back to fire before loading.'},
-    {name:'Arm Circles',type:'warmup',img:'armcirc',sets:'\u2014',reps:'10\u00d7each dir',rpe:'3',muscles:['Rotator Cuff','Deltoids'],cue:'Small \u2192 large, forward then backward.'},
-    {name:'Bent-Over Rows (HEAVIER)',type:'compound',img:'bentrow',sets:'5',reps:'8 reps',rpe:'8',muscles:['Lats','Rhomboids','Rear Delts','Biceps'],cue:'5\u00d78 up from 4\u00d710-12. Heavier bar. Hinge 45\u00b0, flat back, elbows past hips, 1-sec squeeze.'},
-    {name:'Single-Arm Dumbbell Row (HEAVIER)',type:'compound',img:'singlerow',sets:'4',reps:'10/side',rpe:'8',muscles:['Lats','Mid Traps','Rhomboids'],cue:'Heavier dumbbell, 10 reps. Full hang stretch at bottom, elbow to hip at top, hold 1 sec.'},
-    {name:'Renegade Rows (HEAVIER)',type:'compound',img:'renegade',sets:'3',reps:'10/side',rpe:'8',muscles:['Lats','Core','Rhomboids','Triceps'],cue:'Heavier dumbbells. Hips stay square \u2014 the rule never changes.'},
-    {name:'Face Pulls (4 Sets)',type:'isolation',img:'facepull',sets:'4',reps:'15 reps',rpe:'6',muscles:['Rear Delts','Rotator Cuff','Mid Traps'],cue:'Up from 3 sets \u2014 shoulder insurance scales with the added pressing volume. Elbows high, external rotate at end.'},
-    {name:'Rear Delt Flyes',type:'isolation',img:'reardeltfly',sets:'3',reps:'15 reps',rpe:'6',muscles:['Rear Delts','Rhomboids','Mid Traps'],cue:'Hinge 45\u00b0, slight elbow bend, raise to shoulder height. 2 sec up, 3 down.'},
-    {name:'Dumbbell Bicep Curls (HEAVIER)',type:'isolation',img:'curl',sets:'4',reps:'10 reps',rpe:'7',muscles:['Biceps Brachii','Brachialis'],cue:'4\u00d710 heavier, up from 3\u00d712. Elbows pinned, supinate up, 3-sec descent.'},
-    {name:'Hammer Curls (HEAVIER)',type:'isolation',img:'hammer',sets:'3',reps:'10 reps',rpe:'6',muscles:['Brachialis','Brachioradialis','Biceps'],cue:'Heavier, 10 reps, neutral grip, alternate arms.'},
-    {name:'\u2705 Zone 2 Walk / Jog (30 min)',type:'cardio',img:'jog',sets:'1',reps:'30 min',rpe:'4-5',muscles:['Cardio','Fat Oxidation'],cue:'EXTENDED from 20-25 to 30 min. Nasal breathing only, 50-60% max HR (~120-135 bpm). The extra minutes compound weekly.'},
-    {name:'Lat Overhead Stretch',type:'cooldown',img:'latstr',sets:'\u2014',reps:'30-40 sec/side',rpe:'2',muscles:['Lats','Teres Major'],cue:'Grip overhead anchor, lean away. Priority after the heaviest pull day yet.'},
-    {name:'Bicep Stretch',type:'cooldown',img:'bicepstr',sets:'\u2014',reps:'30 sec/side',rpe:'2',muscles:['Biceps Brachii','Forearm Flexors'],cue:'Arm out palm-up, gently pull fingers back. Or palm on wall, turn away.'},
-    {name:'Rear Delt / Cross-Body Stretch',type:'cooldown',img:'reardeltstr',sets:'\u2014',reps:'30 sec/side',rpe:'2',muscles:['Rear Delts','Rotator Cuff'],cue:'Arm across chest, opposite hand above elbow, shoulder stays down.'},
+    {name:'Band Pull-Aparts',type:'warmup',img:'bandpull',sets:'—',reps:'3×15',rpe:'4',muscles:['Rear Delts','Rhomboids','Rotator Cuff'],cue:'Arms straight, pull to chest, squeeze blades. The essential shoulder primer.'},
+    {name:'Scapular Retractions',type:'warmup',img:'shrug',sets:'—',reps:'3×12',rpe:'3',muscles:['Rhomboids','Mid Traps'],cue:'Pinch shoulder blades 2 sec, release. Teaches the back to fire before loading.'},
+    {name:'⭐ T-Bar Rows',type:'compound',img:'tbarrow',sets:'4',reps:'10 reps',rpe:'8',muscles:['Lats','Rhomboids','Mid Traps','Biceps'],cue:'NEW: the neutral-grip angle builds mid-back thickness like nothing in Phase 1. Flat back, drive elbows past hips, hard squeeze at top.'},
+    {name:'⭐ Inverted Rows',type:'compound',img:'invertedrow',sets:'4',reps:'12 reps',rpe:'8',muscles:['Lats','Rhomboids','Rear Delts','Core'],cue:'NEW bodyweight pull: bar at hip height, body straight as a plank, pull chest to bar. Scales with foot position. Brutal on the upper back and core together.'},
+    {name:'⭐ Kneeling High-Pulley Rows',type:'compound',img:'highpulley',sets:'3',reps:'12 reps',rpe:'7',muscles:['Lats','Teres Major','Biceps'],cue:'NEW angle: pull from high to low toward the ribs, mimicking a pulldown but with more lat stretch. Lean back slightly, drive elbows down and in.'},
+    {name:'⭐ Reverse Flyes',type:'isolation',img:'reverseflye',sets:'4',reps:'15 reps',rpe:'6',muscles:['Rear Delts','Rhomboids','Mid Traps'],cue:'NEW rear-delt isolation. Hinge 45°, slight elbow bend, raise arms wide to shoulder height. 2 sec up, 3 down. Critical for posture and shoulder health.'},
+    {name:'⭐ Barbell Shrugs',type:'isolation',img:'shrug',sets:'3',reps:'15 reps',rpe:'6',muscles:['Upper Traps'],cue:'NEW: shrug straight up, 1-sec hold at top, slow down. Builds the upper-trap line that frames the neck. No rolling.'},
+    {name:'✅ Zone 2 Walk / Jog (25-30 min)',type:'cardio',img:'jog',sets:'1',reps:'25-30 min',rpe:'4-5',muscles:['Cardio','Fat Oxidation'],cue:'Nasal breathing only, 50-60% max HR. Fat oxidation zone — burns fat directly as fuel without taxing recovery.'},
+    {name:'Lat & Rear Delt Stretch',type:'cooldown',img:'latstr',sets:'—',reps:'30 sec/side',rpe:'2',muscles:['Lats','Rear Delts'],cue:'Overhead lat stretch each side, then cross-body rear-delt stretch.'},
   ]},
-  {day:'FRI',fullDay:'Friday',color:'#F59E0B',label:'Full Body Compound',sublabel:'Deadlift 5\u00d75 \u00b7 18-Min AMRAP',
-   emoji:'\u26a1',duration:'~70 min',isRest:false,
-   goal:'PHASE 2 CENTERPIECE: 5\u00d75 heavy deadlifts with full rest, weighted pull-up progression, AMRAP extended to 18 min.',
+  {day:'FRI',fullDay:'Friday',color:'#F59E0B',label:'Full Body Tempo Compound',sublabel:'Trap-Bar Focus · AMRAP',
+   emoji:'⚡',duration:'~65 min',isRest:false,
+   goal:'PHASE 2 THEME: tempo-controlled compounds under longer time-under-tension build muscle while the deficit strips fat. Different from Phase 1\'s straight-set heavy work.',
    exercises:[
-    {name:'Hip Swings Warm-Up',type:'warmup',img:'hipswing',sets:'\u2014',reps:'2\u00d710 each side',rpe:'4',muscles:['Hip Flexors','Hamstrings','Glutes'],cue:'Hold wall: forward/back 10\u00d7, side to side 10\u00d7. Increasing range. Critical before 5\u00d75.'},
-    {name:'Inchworm',type:'warmup',img:'inchworm',sets:'\u2014',reps:'2\u00d75 reps',rpe:'4',muscles:['Hamstrings','Spine','Shoulders','Core'],cue:'Fold, walk hands to push-up, walk feet back, stand. Full spine articulation.'},
-    {name:'Jump Rope (or Simulated)',type:'warmup',img:'ropejump',sets:'\u2014',reps:'2 min',rpe:'5',muscles:['Calves','Cardio'],cue:'2 min continuous to 65% max HR. Plus do 2 light warm-up sets of deadlifts before working weight.'},
-    {name:'Deadlifts 5\u00d75 (HEAVY)',type:'compound',img:'deadlift',sets:'5',reps:'5 reps',rpe:'9',muscles:['Hamstrings','Glutes','Back','Traps','Core'],cue:'THE Phase 2 centerpiece. 5\u00d75 at your heaviest controllable load \u2014 rest a FULL 2.5 min between sets. Push the floor away, flat back, hips through at lockout. Add 5-10 lbs weekly.'},
-    {name:'Dumbbell Thrusters (HEAVIER)',type:'compound',img:'thruster4',sets:'4',reps:'10 reps',rpe:'9',muscles:['Quads','Glutes','Deltoids','Triceps'],cue:'Heavier pair, 10 reps. Squat to overhead press in one fluid motion.'},
-    {name:'\u2b50 Weighted Pull-Ups / Progression',type:'compound',img:'weightedpullup',sets:'5',reps:'6-8 reps',rpe:'8',muscles:['Lats','Biceps','Rear Delts','Core'],cue:'NEW PROGRESSION: 5 sets. Once you hit 8 clean bodyweight reps on all sets, add weight \u2014 backpack or dip belt. No bar? Heaviest lat pulldown.'},
-    {name:'Goblet Squats (Pause Reps)',type:'compound',img:'goblet',sets:'3',reps:'10 reps',rpe:'8',muscles:['Quads','Glutes','Core'],cue:'NEW STIMULUS: 2-sec dead pause at the bottom of every rep. Kills the bounce, forces raw strength out of the hole.'},
-    {name:'Dumbbell Chest Press (Floor)',type:'compound',img:'floorpress',sets:'3',reps:'10 reps',rpe:'7',muscles:['Chest','Triceps','Front Delts'],cue:'Heavier, 10 reps. Explosive press, 2-sec lower.'},
-    {name:'\u2b50 18-Min AMRAP Finisher',type:'finisher',img:'amrap',sets:'\u2014',reps:'18 min AMRAP',rpe:'10',muscles:['Full Body','Cardio'],cue:'EXTENDED from 15 to 18 min: 5 Burpees \u2192 10 Jump Squats \u2192 15 Mountain Climbers. Beat your Phase 1 round count even with the longer clock.'},
-    {name:'Hip Flexor Stretch',type:'cooldown',img:'hipflexstr',sets:'\u2014',reps:'30-40 sec/side',rpe:'2',muscles:['Hip Flexors','Psoas'],cue:'Kneeling lunge, hips forward and down. First stretch after 5\u00d75 deadlifts, every time.'},
-    {name:'Hamstring Stretch',type:'cooldown',img:'lyinghamstr',sets:'\u2014',reps:'30-40 sec/side',rpe:'2',muscles:['Hamstrings','Calves'],cue:'Lying, one leg up, hold behind knee, pull toward chest.'},
-    {name:'Chest Stretch',type:'cooldown',img:'cheststr',sets:'\u2014',reps:'30 sec',rpe:'2',muscles:['Chest','Front Delts'],cue:'Hands behind head, elbows wide, open to ceiling. Or doorway lean.'},
-    {name:'Lat Stretch',type:'cooldown',img:'latstr',sets:'\u2014',reps:'30 sec/side',rpe:'2',muscles:['Lats','Teres Major'],cue:'Overhead grip, lean away, feel the whole side of your back.'},
+    {name:'Hip Swings, Inchworms, Jump Rope',type:'warmup',img:'inchworm',sets:'—',reps:'6 min',rpe:'5',muscles:['Hips','Spine','Shoulders'],cue:'Mobilize fully and raise HR to 65% before loading.'},
+    {name:'⭐ Tempo Deadlifts (4-sec Down)',type:'compound',img:'deadlift',sets:'4',reps:'6 reps',rpe:'8',muscles:['Hamstrings','Glutes','Back','Traps'],cue:'NEW tempo focus: lower under control over 4 full seconds, then drive up. The long eccentric massively increases muscle-building stimulus at a lighter load — easier on the spine.'},
+    {name:'⭐ Single-Leg RDL',type:'compound',img:'sldeadlift',sets:'3',reps:'10/leg',rpe:'8',muscles:['Hamstrings','Glutes','Core','Balance'],cue:'NEW: hinge on one leg, other leg extends behind for counterbalance. Exposes hamstring imbalances and builds serious stability. Slow and deliberate.'},
+    {name:'⭐ Front Squats (Tempo)',type:'compound',img:'frontsquat',sets:'3',reps:'10 reps',rpe:'8',muscles:['Quads','Core','Glutes'],cue:'3-sec descent, 1-sec pause at the bottom, drive up. The front-load plus tempo turns this into a quad and core builder.'},
+    {name:'⭐ Inverted Row (Tempo)',type:'compound',img:'invertedrow',sets:'3',reps:'12 reps',rpe:'8',muscles:['Lats','Rhomboids','Core'],cue:'Pull up explosively, lower over 3 sec. Body rigid as a plank throughout. Time-under-tension for the whole back.'},
+    {name:'⭐ Dumbbell Floor Press (Tempo)',type:'compound',img:'dbfloorpress',sets:'3',reps:'10 reps',rpe:'7',muscles:['Chest','Triceps','Front Delts'],cue:'3-sec lower to the floor, explosive press. Controlled eccentric builds the chest with shoulder-friendly mechanics.'},
+    {name:'⭐ 15-Min AMRAP Finisher',type:'finisher',img:'amrap',sets:'—',reps:'15 min AMRAP',rpe:'10',muscles:['Full Body','Cardio'],cue:'5 Burpees → 10 Jump Squats → 15 Mountain Climbers. Log rounds, beat them weekly.'},
+    {name:'Full Body Stretch',type:'cooldown',img:'fullbodystr',sets:'—',reps:'6 min',rpe:'2',muscles:['Full Body'],cue:'Rotate the 4 stretches, 30-40 sec each. Hip flexors first after deadlifts.'},
   ]},
-  {day:'SAT',fullDay:'Saturday',color:'#EC4899',label:'Metabolic Conditioning',sublabel:'5 Giant Rounds \u00b7 10 Sprints',
-   emoji:'\ud83d\udca5',duration:'~60 min',isRest:false,
-   goal:'PHASE 2: giant set grows to 5 rounds, sprints to 10. Box jumps replace jump lunges for explosive power.',
+  {day:'SAT',fullDay:'Saturday',color:'#EC4899',label:'EMOM Conditioning',sublabel:'Every-Minute Format · Sprints',
+   emoji:'💥',duration:'~55 min',isRest:false,
+   goal:'PHASE 2 THEME: EMOM (Every Minute On the Minute) replaces Phase 1\'s giant sets. Fixed-minute work-rest cycles build a different kind of work capacity and keep intensity honest.',
    exercises:[
-    {name:'Jump Rope Warm-Up',type:'warmup',img:'ropejump',sets:'\u2014',reps:'2 min',rpe:'5',muscles:['Calves','Cardio'],cue:'2 min continuous to 65% max HR before round 1.'},
-    {name:'Hip Circles Warm-Up',type:'warmup',img:'hipcirc',sets:'\u2014',reps:'10\u00d7each dir',rpe:'4',muscles:['Hips','Hip Flexors'],cue:'Full-range hip circles both directions. Prepares joints for jumping.'},
-    {name:'Giant Set \u2014 Dumbbell Thrusters',type:'giant',img:'thruster4',sets:'5',reps:'15 reps',rpe:'9',muscles:['Quads','Glutes','Deltoids'],cue:'5 ROUNDS now (up from 4). 15 sec between exercises, 90 sec after each full round.'},
-    {name:'Giant Set \u2014 Burpees',type:'giant',img:'burpee4',sets:'5',reps:'12 reps',rpe:'10',muscles:['Full Body','Cardio'],cue:'Log time per 12 reps. Beat last week, every week.'},
-    {name:'Giant Set \u2014 Mountain Climbers',type:'giant',img:'mountainclimb',sets:'5',reps:'30/side',rpe:'9',muscles:['Core','Hip Flexors','Cardio'],cue:'Max pace, hips level, 15 sec rest, next exercise.'},
-    {name:'\u2705 Giant Set \u2014 Box Jumps',type:'giant',img:'boxjump',sets:'5',reps:'10 reps',rpe:'9',muscles:['Quads','Glutes','Calves','Power'],cue:'REPLACES Jump Lunges. Sturdy bench or box. Explode UP, land soft on top, STEP down \u2014 never jump down. Achilles safety rule.'},
-    {name:'Giant Set \u2014 Plank Hold',type:'giant',img:'plank',sets:'5',reps:'45 sec',rpe:'7',muscles:['Core','Glutes','Shoulders'],cue:'Round ends here \u2192 90 sec rest \u2192 repeat. 5 complete rounds.'},
-    {name:'\u2b50 Sprint Finisher (10 Rounds)',type:'finisher',img:'sprint',sets:'10',reps:'30s ALL-OUT / 45s walk',rpe:'10',muscles:['Full Body','Cardio'],cue:'Up from 8 to 10 rounds = 12.5 min. 88-95% max HR. The afterburn engine of the whole week.'},
-    {name:'Full Body Stretch',type:'cooldown',img:'fullbodystr',sets:'\u2014',reps:'10 min',rpe:'2',muscles:['Full Body'],cue:'Full 10 minutes. Rotate the 4 stretches shown, 4-7-8 breathing throughout.'},
-    {name:'Calf & IT Band Stretch',type:'cooldown',img:'calfstr',sets:'\u2014',reps:'30 sec/side',rpe:'2',muscles:['Calves','IT Band'],cue:'Wall calf stretch each side. Doubly important after box jumps + 10 sprints.'},
-    {name:'Spinal Twist Stretch',type:'cooldown',img:'spinalstr',sets:'\u2014',reps:'30 sec/side',rpe:'2',muscles:['Spine','Glutes','Piriformis'],cue:'Lying, knee across body, shoulders flat, look away from knee.'},
+    {name:'Jump Rope & Hip Circles',type:'warmup',img:'ropejump',sets:'—',reps:'5 min',rpe:'5',muscles:['Full Body'],cue:'65% max HR before the EMOM blocks. Warm up thoroughly.'},
+    {name:'⭐ EMOM Block 1 — Goblet Squats',type:'giant',img:'goblet',sets:'10',reps:'12 reps/min',rpe:'8',muscles:['Quads','Glutes','Core'],cue:'NEW FORMAT: do 12 goblet squats at the top of each minute, rest the remainder. 10 minutes. The faster you work, the more rest you earn — pure work capacity.'},
+    {name:'⭐ EMOM Block 2 — Burpees',type:'giant',img:'burpee4',sets:'10',reps:'8 reps/min',rpe:'9',muscles:['Full Body','Cardio'],cue:'8 burpees at the top of each minute for 10 min. As you fatigue, the rest shrinks. Brutal and self-pacing.'},
+    {name:'⭐ EMOM Block 3 — KB Swings',type:'giant',img:'kbswing',sets:'10',reps:'15 reps/min',rpe:'8',muscles:['Glutes','Hamstrings','Core','Cardio'],cue:'NEW: 15 explosive hip-snap swings each minute for 10 min. Hinge, don\'t squat — drive with the glutes. The ballistic posterior-chain engine.'},
+    {name:'⭐ Sprint Finisher (10 Rounds)',type:'finisher',img:'sprint',sets:'10',reps:'30s ALL-OUT / 45s walk',rpe:'10',muscles:['Full Body','Cardio'],cue:'10 rounds. 88-95% max HR. The afterburn ceiling of the week.'},
+    {name:'Full Body Stretch + Deep Breathing',type:'cooldown',img:'fullbodystr',sets:'—',reps:'10 min',rpe:'2',muscles:['Full Body'],cue:'Full 10 min, 4-7-8 breathing. Most needed after the highest-volume day.'},
   ]},
-  {day:'SUN',fullDay:'Sunday',color:'#10B981',label:'Full Recovery',sublabel:'Recovery + Waist Measurement',
-   emoji:'\ud83d\ude34',duration:'~50 min',isRest:true,
-   goal:'Recovery demand is HIGHER in Phase 2 \u2014 heavier loads need more repair. Plus: weekly waist measurement is now mandatory.',
+  {day:'SUN',fullDay:'Sunday',color:'#10B981',label:'Full Recovery',sublabel:'Meal Prep + Waist Measure',
+   emoji:'😴',duration:'~50 min',isRest:true,
+   goal:'Recovery IS training. The new movement patterns create new soreness — respect the rest. Protein rises to 175g to fund the muscle growth.',
    exercises:[
-    {name:'Recovery Walk',type:'recovery',img:'recwalk',sets:'1',reps:'30 min',rpe:'3',muscles:['Active Recovery','Blood Flow'],cue:'Easy pace, no HR target. Blood flow = repair.'},
-    {name:'Foam Rolling (12 min)',type:'recovery',img:'foamroll',sets:'1',reps:'12 min',rpe:'2',muscles:['IT Band','Glutes','Quads','Lats'],cue:'2 extra minutes vs Phase 1. 30-45 sec per tight spot, slow rolls, pause on tender points.'},
-    {name:'Static Stretching',type:'recovery',img:'staticstr',sets:'1',reps:'15 min',rpe:'2',muscles:['Full Body'],cue:'Rotate the 4 stretches shown, 30-60 sec holds. Target Saturday soreness.'},
-    {name:'Meal Prep \u2014 175g Protein',type:'admin',img:'mealprep',sets:'\u2014',reps:'Priority',rpe:'\u2014',muscles:['Nutrition'],cue:'PHASE 2: protein rises to 175g/day. Chicken, lean beef, eggs, Greek yogurt, cottage cheese. Prep 4-5 days. This funds the heavier lifting.'},
-    {name:'Hydration Check',type:'admin',img:'hydration',sets:'\u2014',reps:'3-4 liters',rpe:'\u2014',muscles:['Recovery'],cue:'Electrolytes on ALL 6 training days now \u2014 the 45/15 protocol sweats more.'},
-    {name:'Sleep Optimization',type:'admin',img:'sleep',sets:'\u2014',reps:'7-9 hours',rpe:'\u2014',muscles:['Recovery','Hormones'],cue:'GH repairs what 5\u00d75 deadlifts break down. Under-sleeping in Phase 2 stalls BOTH lifts and fat loss.'},
-    {name:'Log Week + Measure Waist',type:'admin',img:'logweek',sets:'\u2014',reps:'10 min',rpe:'\u2014',muscles:['Progressive Overload'],cue:'PHASE 2 ADDITION: tape your waist at the navel every Sunday, fasted. Expect ~0.25-0.5 inch drop per week. The scale may lie; the tape will not. Also log all weights lifted, plan next week heavier.'},
+    {name:'Recovery Walk',type:'recovery',img:'recwalk',sets:'1',reps:'30 min',rpe:'3',muscles:['Active Recovery','Blood Flow'],cue:'Easy pace, no HR target. Blood flow flushes the week and speeds repair.'},
+    {name:'Foam Rolling',type:'recovery',img:'foamroll',sets:'1',reps:'12 min',rpe:'2',muscles:['IT Band','Glutes','Quads','Lats'],cue:'30-45 sec per tight spot. The unilateral work will leave new spots tender — hunt for them.'},
+    {name:'Static Stretching',type:'recovery',img:'staticstr',sets:'1',reps:'15 min',rpe:'2',muscles:['Full Body'],cue:'Hold 30-60 sec each. Target whatever the new movements made sore.'},
+    {name:'Meal Prep — 175g Protein',type:'admin',img:'mealprep',sets:'—',reps:'Priority',rpe:'—',muscles:['Nutrition'],cue:'PHASE 2: protein rises to 175g/day. New movements recruit new muscle — feed it. Prep 4-5 days of meals.'},
+    {name:'Hydration Check',type:'admin',img:'hydration',sets:'—',reps:'3-4 liters',rpe:'—',muscles:['Recovery'],cue:'Electrolytes on all 6 training days. The Tabata and EMOM days sweat hard.'},
+    {name:'Sleep Optimization',type:'admin',img:'sleep',sets:'—',reps:'7-9 hours',rpe:'—',muscles:['Recovery','Hormones'],cue:'GH repairs and builds during deep sleep. Consistent bedtime, cool dark room.'},
+    {name:'Log Week + Measure Waist',type:'admin',img:'logweek',sets:'—',reps:'10 min',rpe:'—',muscles:['Progressive Overload'],cue:'PHASE 2: tape your waist every Sunday, fasted. Expect ~0.25-0.5"/week. Log every weight and aim to add load or reps next week. Use the PROGRESS tab to record it all.'},
   ]},
 ];
+
+
+// ─── per-phase tracker config ───
+let APP_MODE='workout';
+const MODE_COLOR='#A855F7';
+const NAV_HTML=`<div class="pnav">
+      <a href="index.html">PHASE 1</a>
+      <a href="phase2.html" class="cur">PHASE 2</a>
+      <a href="phase3.html">PHASE 3</a>
+      <a href="phase4.html">PHASE 4</a>
+    </div>`;
+const CHECKIN_WEEKS=['Baseline (Jun 20)','Week 5 (Jun 28)','Week 6 (Jul 5)','Week 7 (Jul 12)','Week 8 (Jul 17)'];
+const CAL_FOCUS=['Recovery','Lower','Push','Tabata','Pull','Full Body','EMOM'];
+const CAL_START_DOW=6;
+const CAL_TITLE='28-DAY CALENDAR';
+const CAL_DATES='Jun 20 – Jul 17, 2026.';
+const CALC_NOTE='Re-measure on Jun 20 to set your true Phase 2 baseline. Waist at the navel, relaxed — do not suck in.';
+const ROADMAP_HTML='<div class="rm-row" style="background:transparent;border-color:#16263a"><span class="rm-phase" style="color:#1565C0">Phase 1</span><span class="rm-bf">20→17% BF</span><span class="rm-tag">✓</span></div><div class="rm-row" style="background:#A855F722;border-color:#A855F7"><span class="rm-phase" style="color:#A855F7">PHASE 2</span><span class="rm-bf">17→14% BF</span><span class="rm-tag">▶</span></div><div class="rm-row" style="background:transparent;border-color:#16263a"><span class="rm-phase" style="color:#2E7D32">Phase 3</span><span class="rm-bf">14→12% BF</span><span class="rm-tag">·</span></div><div class="rm-row" style="background:transparent;border-color:#16263a"><span class="rm-phase" style="color:#6A1B9A">Phase 4</span><span class="rm-bf">12→11% BF</span><span class="rm-tag">🏁</span></div>';
+
+// ═══════════════════════════════════════════════════════════════════
+//  PROGRESS TRACKER — localStorage source of truth
+// ═══════════════════════════════════════════════════════════════════
+const PKEY='rc_progress_p2';  // replaced per-phase
+function loadProg(){try{return JSON.parse(localStorage.getItem(PKEY)||'{}');}catch(e){return {};}}
+function saveProg(p){localStorage.setItem(PKEY,JSON.stringify(p));}
+let PROG=loadProg();
+function setProg(path,val){
+  PROG[path]=val; saveProg(PROG);
+}
+
+// Navy body-fat formula (male/female)
+function navyBF(){
+  const g=PROG['calc_gender']||'Male';
+  const h=parseFloat(PROG['calc_height']);
+  const w=parseFloat(PROG['calc_waist']);
+  const n=parseFloat(PROG['calc_neck']);
+  const hp=parseFloat(PROG['calc_hip']);
+  if(!h||!w||!n) return null;
+  let bf;
+  if(g==='Male'){
+    if(w-n<=0) return null;
+    bf=495/(1.0324-0.19077*Math.log10(w-n)+0.15456*Math.log10(h))-450;
+  }else{
+    if(!hp||w+hp-n<=0) return null;
+    bf=495/(1.29579-0.35004*Math.log10(w+hp-n)+0.22100*Math.log10(h))-450;
+  }
+  return bf>0&&bf<70?bf:null;
+}
+function bfCategory(bf,gender){
+  if(bf==null) return ['—','#475569'];
+  const m=gender!=='Female';
+  if(m){
+    if(bf<6) return ['💛 Essential','#eab308'];
+    if(bf<14) return ['🏆 Athlete','#22c55e'];
+    if(bf<18) return ['✅ Fitness','#3b82f6'];
+    if(bf<25) return ['⚠ Average','#f59e0b'];
+    return ['❌ Above Average','#ef4444'];
+  }else{
+    if(bf<16) return ['💛 Essential','#eab308'];
+    if(bf<21) return ['🏆 Athlete','#22c55e'];
+    if(bf<25) return ['✅ Fitness','#3b82f6'];
+    if(bf<32) return ['⚠ Average','#f59e0b'];
+    return ['❌ Above Average','#ef4444'];
+  }
+}
+
+// Calendar day completion (separate from workout-day completion)
+function calKey(i){return 'cal_'+i;}
+function toggleCalDay(i){
+  PROG[calKey(i)]=!PROG[calKey(i)]; saveProg(PROG); renderProgress();
+}
+
+function updateBF(){
+  const g=PROG['calc_gender']||'Male';
+  const bf=navyBF();
+  const r=bfCategory(bf,g);
+  const bfEl=document.querySelector('.calc-bf');
+  const catEl=document.querySelector('.calc-cat');
+  if(bfEl) bfEl.textContent=(bf!=null?bf.toFixed(1)+'%':'--');
+  if(catEl){ catEl.textContent=r[0]; catEl.style.color=r[1]; }
+}
+function renderProgress(){
+  const root=document.getElementById('root');
+  const mc=MODE_COLOR;
+  // ─ Navy calculator ─
+  const g=PROG['calc_gender']||'Male';
+  const bf=navyBF();
+  const [catTxt,catColor]=bfCategory(bf,g);
+  const isF=g==='Female';
+  const fields=[
+    ['Height','calc_height','in'],
+    ['Waist','calc_waist','in'],
+    ['Neck','calc_neck','in'],
+  ];
+  if(isF) fields.push(['Hip','calc_hip','in']);
+  let calcRows='';
+  fields.forEach(function(f){
+    const v=PROG[f[1]]!=null?PROG[f[1]]:'';
+    calcRows+='<div class="calc-row"><span class="calc-lbl">'+f[0]+'</span>'+
+      '<input class="calc-input" type="number" inputmode="decimal" value="'+v+'" '+
+      'oninput="setProg(\''+f[1]+'\',this.value);updateBF()"/>'+
+      '<span class="calc-unit">'+f[2]+'</span></div>';
+  });
+  const bfDisp=bf!=null?bf.toFixed(1):'--';
+
+  // ─ Weekly check-ins ─
+  const weeks=CHECKIN_WEEKS;
+  let ciRows='<div class="ci-row hdr-row"><div class="ci-cell wk">WEEK</div>'+
+    '<div class="ci-cell">WEIGHT</div><div class="ci-cell">WAIST</div><div class="ci-cell">BF%</div></div>';
+  weeks.forEach(function(wk,i){
+    ciRows+='<div class="ci-row">'+
+      '<div class="ci-cell wk">'+wk+'</div>'+
+      '<div class="ci-cell"><input type="number" inputmode="decimal" placeholder="—" value="'+(PROG['ci'+i+'_wt']||'')+'" oninput="setProg(\'ci'+i+'_wt\',this.value)"/></div>'+
+      '<div class="ci-cell"><input type="number" inputmode="decimal" placeholder="—" value="'+(PROG['ci'+i+'_wa']||'')+'" oninput="setProg(\'ci'+i+'_wa\',this.value)"/></div>'+
+      '<div class="ci-cell"><input type="number" inputmode="decimal" placeholder="—" value="'+(PROG['ci'+i+'_bf']||'')+'" oninput="setProg(\'ci'+i+'_bf\',this.value)"/></div>'+
+    '</div>';
+  });
+
+  // ─ 28-day calendar ─
+  const focusMap=CAL_FOCUS;
+  const startDay=CAL_START_DOW; // 0=Sun..6=Sat for day 1
+  const dowNames=['S','M','T','W','T','F','S'];
+  let calCells='';
+  dowNames.forEach(function(d){calCells+='<div class="cal-dow">'+d+'</div>';});
+  // leading blanks
+  for(let b=0;b<startDay;b++) calCells+='<div></div>';
+  let doneCount=0;
+  for(let i=0;i<28;i++){
+    const dow=(startDay+i)%7;
+    const isRest=dow===0; // Sunday rest
+    const done=!!PROG[calKey(i)];
+    if(done) doneCount++;
+    const foc=focusMap[dow]||'';
+    calCells+='<div class="cal-day'+(done?' done':'')+(isRest?' rest':'')+'" onclick="toggleCalDay('+i+')">'+
+      '<div class="cd-num">'+(i+1)+'</div>'+
+      (done?'<div class="cd-chk">✓</div>':'<div class="cd-lbl">'+foc+'</div>')+
+    '</div>';
+  }
+  const pctDone=Math.round(doneCount/28*100);
+
+  root.innerHTML=
+    NAV_HTML+
+    '<div class="mtabs" style="--mc:'+mc+'">'+
+      '<button class="mtab" onclick="switchMode(\'workout\')">🏋️ WORKOUT</button>'+
+      '<button class="mtab on" onclick="switchMode(\'progress\')">📊 PROGRESS</button>'+
+    '</div>'+
+    '<div class="prog"><div class="prog-inner">'+
+      // BF Calculator
+      '<div class="psec"><div class="psec-hdr" style="background:'+mc+'"><span>📏</span> BODY FAT CALCULATOR</div>'+
+        '<div class="psec-body">'+
+          '<div class="psec-note">'+CALC_NOTE+'</div>'+
+          '<div class="calc-row"><span class="calc-lbl">Gender</span>'+
+            '<div class="calc-seg" style="flex:0 0 160px">'+
+              '<button class="'+(!isF?'on':'')+'" onclick="setProg(\'calc_gender\',\'Male\');renderProgress()">MALE</button>'+
+              '<button class="'+(isF?'on':'')+'" onclick="setProg(\'calc_gender\',\'Female\');renderProgress()">FEMALE</button>'+
+            '</div></div>'+
+          calcRows+
+          '<div class="calc-result">'+
+            '<div class="calc-bf" style="color:'+mc+'">'+bfDisp+(bf!=null?'%':'')+'</div>'+
+            '<div class="calc-bf-lbl">ESTIMATED BODY FAT</div>'+
+            '<div class="calc-cat" style="color:'+catColor+'">'+catTxt+'</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      // Roadmap
+      '<div class="psec"><div class="psec-hdr" style="background:'+mc+'"><span>🗓️</span> ROADMAP</div>'+
+        '<div class="psec-body">'+ROADMAP_HTML+'</div>'+
+      '</div>'+
+      // Weekly check-ins
+      '<div class="psec"><div class="psec-hdr" style="background:'+mc+'"><span>📅</span> WEEKLY CHECK-INS</div>'+
+        '<div class="psec-body">'+
+          '<div class="psec-note">Sunday mornings, fasted. Tap any cell to log. Saved automatically on this device.</div>'+
+          ciRows+
+        '</div>'+
+      '</div>'+
+      // 28-day calendar
+      '<div class="psec"><div class="psec-hdr" style="background:'+mc+'"><span>✅</span> '+CAL_TITLE+'</div>'+
+        '<div class="psec-body">'+
+          '<div class="psec-note">Tap each day you complete. '+CAL_DATES+'</div>'+
+          '<div class="cal-grid">'+calCells+'</div>'+
+          '<div class="cal-stats">'+
+            '<div class="cal-stat"><div class="cal-stat-num" style="color:'+mc+'">'+doneCount+'</div><div class="cal-stat-lbl">DONE</div></div>'+
+            '<div class="cal-stat"><div class="cal-stat-num" style="color:#475569">'+(28-doneCount)+'</div><div class="cal-stat-lbl">LEFT</div></div>'+
+            '<div class="cal-stat"><div class="cal-stat-num" style="color:#22c55e">'+pctDone+'%</div><div class="cal-stat-lbl">COMPLETE</div></div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div></div>';
+}
+
+function switchMode(m){
+  APP_MODE=m;
+  if(m==='progress'){ PROG=loadProg(); renderProgress(); }
+  else { render(); }
+}
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let S={
@@ -776,6 +1055,7 @@ function render(){
       <a href="phase3.html">PHASE 3</a>
       <a href="phase4.html">PHASE 4</a>
     </div>
+    <div class="mtabs" style="--mc:#A855F7"><button class="mtab on" onclick="switchMode('workout')">🏋️ WORKOUT</button><button class="mtab" onclick="switchMode('progress')">📊 PROGRESS</button></div>
     <div class="hdr">
       <div class="hdr-top">
         <div><div class="hdr-sub">PHASE 2 · INTENSIFICATION · 17% \u2192 14% BF</div>
